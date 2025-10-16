@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Хаски-кафе «Северный друг»</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(180deg, #eaf6ff, #ffffff);
+      color: #333;
+    }
+    header {
+      text-align: center;
+      padding: 2rem 1rem;
+    }
+    header svg {
+      width: 80px;
+      height: 80px;
+    }
+    h1 {
+      margin: 0.5rem 0 0;
+      font-size: 2rem;
+      color: #1a4d7a;
+    }
+    .hero {
+      text-align: center;
+      padding: 2rem 1rem;
+    }
+    .hero p {
+      font-size: 1.2rem;
+      color: #555;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    form {
+      background: #f7fbff;
+      padding: 1.5rem;
+      border-radius: 12px;
+      max-width: 420px;
+      margin: 2rem auto;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    form h2 {
+      text-align: center;
+      margin-top: 0;
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: 500;
+    }
+    input, select {
+      width: 100%;
+      padding: 0.6rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+      margin-top: 0.4rem;
+    }
+    button {
+      margin-top: 1.5rem;
+      width: 100%;
+      padding: 0.8rem;
+      background: #1a4d7a;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #2b6da8;
+    }
+    .contacts {
+      text-align: center;
+      margin-top: 2rem;
+      padding: 2rem 1rem;
+      background: #f0f7ff;
+    }
+    .contacts p {
+      margin: 0.5rem 0;
+    }
+    footer {
+      text-align: center;
+      font-size: 0.9rem;
+      padding: 1rem;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <svg viewBox="0 0 64 64" fill="none">
+      <circle cx="32" cy="32" r="30" stroke="#1a4d7a" stroke-width="4"/>
+      <path d="M20 40 Q32 52 44 40 Q46 24 32 16 Q18 24 20 40Z" fill="#1a4d7a"/>
+      <circle cx="26" cy="30" r="3" fill="#fff"/>
+      <circle cx="38" cy="30" r="3" fill="#fff"/>
+    </svg>
+    <h1>Хаски-кафе «Северный друг»</h1>
+  </header>
+
+  <section class="hero">
+    <p>Добро пожаловать в уютное место, где можно обнимать пушистых хаски и наслаждаться ароматным кофе. Забронируйте время заранее — наши хвостатые друзья ждут вас!</p>
+  </section>
+
+  <form id="bookingForm">
+    <h2>Бронирование визита</h2>
+    <label>Имя
+      <input type="text" id="name" required />
+    </label>
+    <label>Телефон
+      <input type="tel" id="phone" required placeholder="+7 (___) ___-__-__" />
+    </label>
+    <label>Дата визита
+      <input type="date" id="date" required />
+    </label>
+    <label>Время
+      <input type="time" id="time" required />
+    </label>
+    <label>Количество гостей
+      <select id="guests" required>
+        <option value="">Выберите...</option>
+        <option>1</option>
+        <option>2</option>
+        <option>3</option>
+        <option>4</option>
+        <option>5+</option>
+      </select>
+    </label>
+    <button type="submit">Отправить заявку</button>
+  </form>
+
+  <section class="contacts">
+    <h2>Контакты</h2>
+    <p>📞 <a href="tel:+79998887766">+7 (999) 888-77-66</a></p>
+    <p>📍 Москва, ул. Арктическая, д. 7</p>
+    <p>🕒 Пн-Вс: 10:00–22:00</p>
+  </section>
+
+  <footer>
+    © 2025 Хаски-кафе «Северный друг». Все права защищены.
+  </footer>
+
+  <script>
+    document.getElementById('bookingForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const name = document.getElementById('name').value;
+      const phone = document.getElementById('phone').value;
+      alert(`Спасибо, ${name}! Мы свяжемся с вами по номеру ${phone}.`);
+      e.target.reset();
+    });
+  </script>
+
+  <!-- MANGO DKT -->
+  <!-- Вставьте сюда скрипт Манго Call-Tracking -->
+
+  <!-- MANGO DIALOGS -->
+  <!-- Вставьте сюда скрипт Манго Диалогов -->
+
+</body>
+</html>
