@@ -1,0 +1,196 @@
+{
+  "version": "from_excel_2025-10-17",
+  "currency": "RUB",
+  "tariffs": {
+    "Лайм": {
+      "display": "Лайм",
+      "monthly_flat": 0,
+      "availability": {
+        "SIP-линия под виджет": true,
+        "Плата за виджет": true,
+        "Мультирегиональность на продукте": true,
+        "Робот-аналитик": true,
+        "Робот-маркетолог": true,
+        "Отдельные пулы номеров для каналов": true,
+        "Мультиканальная аналитика": true,
+        "Роутинг звонков": true,
+        "Антиспам на продукте": true,
+        "Анализ конкурентов": false,
+        "Анализ конкурентов в Telegram": false,
+        "Emailtracking": true
+      },
+      "coefficients": {
+        "per_minute": 1.0,
+        "dynamic_numbers": 1.0,
+        "static_numbers": 1.0
+      }
+    },
+    "Манго": {
+      "display": "Манго",
+      "monthly_flat": 0,
+      "availability": {
+        "SIP-линия под виджет": true,
+        "Плата за виджет": true,
+        "Мультирегиональность на продукте": true,
+        "Робот-аналитик": true,
+        "Робот-маркетолог": true,
+        "Отдельные пулы номеров для каналов": true,
+        "Мультиканальная аналитика": true,
+        "Роутинг звонков": true,
+        "Антиспам на продукте": true,
+        "Анализ конкурентов": false,
+        "Анализ конкурентов в Telegram": false,
+        "Emailtracking": true
+      },
+      "coefficients": {
+        "per_minute": 1.0,
+        "dynamic_numbers": 1.0,
+        "static_numbers": 1.0
+      }
+    },
+    "Папайя новая*": {
+      "display": "Папайя новая*",
+      "monthly_flat": 0,
+      "availability": {
+        "SIP-линия под виджет": false,
+        "Плата за виджет": true,
+        "Мультирегиональность на продукте": false,
+        "Робот-аналитик": false,
+        "Робот-маркетолог": false,
+        "Отдельные пулы номеров для каналов": false,
+        "Мультиканальная аналитика": false,
+        "Роутинг звонков": false,
+        "Антиспам на продукте": false,
+        "Анализ конкурентов": false,
+        "Анализ конкурентов в Telegram": false,
+        "Emailtracking": false
+      },
+      "coefficients": {
+        "per_minute": 1.0,
+        "dynamic_numbers": 1.0,
+        "static_numbers": 1.0
+      }
+    }
+  },
+  "price_table": {
+    "dynamic_number": {
+      "base": 0
+    },
+    "static_number": {
+      "base": 0
+    },
+    "per_minute": {
+      "base": 0
+    },
+    "addons": {
+      "SIP-линия под виджет": {
+        "per_unit_ml": 150.0,
+        "per_unit_papaya": null,
+        "notes": {
+          "C": 0.2,
+          "D": null
+        }
+      },
+      "Плата за виджет": {
+        "per_unit_ml": 500.0,
+        "per_unit_papaya": 350.0,
+        "notes": {
+          "C": 150,
+          "D": "Доп.возможности"
+        }
+      },
+      "Мультирегиональность на продукте": {
+        "per_unit_ml": 2000.0,
+        "per_unit_papaya": null,
+        "notes": {
+          "C": 500,
+          "D": "350***"
+        }
+      },
+      "Робот-аналитик": {
+        "per_unit_ml": 0.0,
+        "per_unit_papaya": null,
+        "notes": {
+          "C": 2000,
+          "D": "+"
+        }
+      },
+      "Робот-маркетолог": {
+        "per_unit_ml": 0.0,
+        "per_unit_papaya": null,
+        "notes": {
+          "C": 1500,
+          "D": "+"
+        }
+      },
+      "Отдельные пулы номеров для каналов": {
+        "per_unit_ml": 1000.0,
+        "per_unit_papaya": null,
+        "notes": {
+          "C": 5000,
+          "D": 10000
+        }
+      },
+      "Мультиканальная аналитика": {
+        "per_unit_ml": 2400.0,
+        "per_unit_papaya": null,
+        "notes": {
+          "C": null,
+          "D": null
+        }
+      },
+      "Роутинг звонков": {
+        "per_unit_ml": 750.0,
+        "per_unit_papaya": null,
+        "notes": {
+          "C": null,
+          "D": null
+        }
+      },
+      "Антиспам на продукте": {
+        "per_unit_ml": 400.0,
+        "per_unit_papaya": null,
+        "notes": {
+          "C": null,
+          "D": null
+        }
+      },
+      "Анализ конкурентов": {
+        "per_unit_ml": null,
+        "per_unit_papaya": null,
+        "notes": {
+          "C": 10000,
+          "D": "безлимит"
+        }
+      },
+      "Анализ конкурентов в Telegram": {
+        "per_unit_ml": null,
+        "per_unit_papaya": null,
+        "notes": {
+          "C": null,
+          "D": null
+        }
+      },
+      "Emailtracking": {
+        "per_unit_ml": 1500.0,
+        "per_unit_papaya": null,
+        "notes": {
+          "C": 10,
+          "D": "+"
+        }
+      }
+    }
+  },
+  "defaults": {
+    "tariff": "Лайм",
+    "visits_month": 50000,
+    "conv_to_call": 0.025,
+    "track_share": 0.8,
+    "avg_talk_time_min": 3.0,
+    "k_peak": 1.9,
+    "safety_factor": 1.3,
+    "cities": 1,
+    "static_extra": 0,
+    "addons": {}
+  }
+}
