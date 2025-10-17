@@ -1,0 +1,165 @@
+{
+  "version": "full_v1",
+  "tariffs": [
+    {
+      "name": "Лайм",
+      "mgp_rub": 1000,
+      "monthly_flat": 3400
+    },
+    {
+      "name": "Манго",
+      "mgp_rub": 3000,
+      "monthly_flat": 3700
+    },
+    {
+      "name": "Папайя",
+      "mgp_rub": 15000,
+      "monthly_flat": 15400
+    }
+  ],
+  "retentions": [
+    {
+      "label": "5 минут",
+      "coef": 0.05
+    },
+    {
+      "label": "15 минут",
+      "coef": 0.15
+    },
+    {
+      "label": "30 минут",
+      "coef": 0.3
+    },
+    {
+      "label": "60 минут",
+      "coef": 0.6
+    },
+    {
+      "label": "120 минут",
+      "coef": 1.0
+    }
+  ],
+  "overage_markup": {
+    "lime": 0.3,
+    "mango": 0.2,
+    "papaya": 0.0
+  },
+  "widgets_rules": {
+    "Лайм": {
+      "max": 3,
+      "free": 1
+    },
+    "Манго": {
+      "max": 10,
+      "free": 1
+    },
+    "Папайя": {
+      "max": null,
+      "free": 10
+    }
+  },
+  "email_tracking": {
+    "included_by_tariff": {
+      "Лайм": 1000,
+      "Манго": 5000,
+      "Папайя": 10000
+    },
+    "bands": [
+      {
+        "low": 0,
+        "high": 20000,
+        "rate": 0.1
+      },
+      {
+        "low": 20000,
+        "high": 100000,
+        "rate": 0.05
+      },
+      {
+        "low": 100000,
+        "high": null,
+        "rate": 0.01
+      }
+    ]
+  },
+  "services": [
+    {
+      "name": "SIP-линия под виджет",
+      "price_lm": 150,
+      "price_mg": 150,
+      "price_pap": 0
+    },
+    {
+      "name": "Плата за виджет",
+      "price_lm": 500,
+      "price_mg": 500,
+      "price_pap": 350
+    },
+    {
+      "name": "Робот-аналитик",
+      "price_lm": 1000,
+      "price_mg": 0,
+      "price_pap": 0
+    },
+    {
+      "name": "Робот-маркетолог",
+      "price_lm": 900,
+      "price_mg": 0,
+      "price_pap": 0
+    },
+    {
+      "name": "Мультирегиональность",
+      "price_lm": 2000,
+      "price_mg": 2000,
+      "price_pap": 0
+    },
+    {
+      "name": "Товарная Аналитика",
+      "price_lm": 2900,
+      "price_mg": 2900,
+      "price_pap": 2900
+    },
+    {
+      "name": "Отчет Чат-Трекинг",
+      "price_lm": 700,
+      "price_mg": 700,
+      "price_pap": 0
+    },
+    {
+      "name": "Отдельные пулы номеров для каналов",
+      "price_lm": 1000,
+      "price_mg": 1000,
+      "price_pap": 1000
+    },
+    {
+      "name": "Мультиканальная аналитика",
+      "price_lm": 2400,
+      "price_mg": 2400,
+      "price_pap": 2400
+    },
+    {
+      "name": "Роутинг звонков",
+      "price_lm": 750,
+      "price_mg": 750,
+      "price_pap": 750
+    },
+    {
+      "name": "Антиспам на продукте",
+      "price_lm": 400,
+      "price_mg": 400,
+      "price_pap": 400
+    },
+    {
+      "name": "Анализ конкурентов",
+      "price_lm": 3500,
+      "price_mg": null,
+      "price_pap": null
+    },
+    {
+      "name": "Emailtracking",
+      "price_lm": 1500,
+      "price_mg": 1500,
+      "price_pap": 1500
+    }
+  ]
+}
