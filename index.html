@@ -46,6 +46,21 @@
           </div>
           <p class="hint">Это же значение используем для Email-Tracking.</p>
         </div>
+        <div class="field static-field">
+          <div class="static-head">
+            <span class="label">Доп. статические номера</span>
+            <span class="static-summary" id="static-summary">0 шт</span>
+          </div>
+          <div class="static-toggle" id="static-toggle">Добавить статические номера</div>
+          <div class="static-box is-hidden" id="static-box">
+            <div class="static-grid">
+              <div>Москва (495)</div><input id="sn-495" class="input" type="number" min="0" step="1" value="0">
+              <div>Москва (499)</div><input id="sn-499" class="input" type="number" min="0" step="1" value="0">
+              <div>С.-Петербург</div><input id="sn-spb" class="input" type="number" min="0" step="1" value="0">
+              <div>Региональные</div><input id="sn-reg" class="input" type="number" min="0" step="1" value="0">
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="card" id="card-total">
@@ -58,16 +73,7 @@
           <div class="row"><span>Доп. виджеты</span><span class="v" id="v-widgets">—</span></div>
           <div class="row"><span>Доп. услуги</span><span class="v" id="v-addons">—</span></div>
           <div class="stack" id="v-addons-list" aria-live="polite"></div>
-          <div class="row"><span>Доп. статические номера</span><span class="v" id="v-static">—</span></div>
-          <div class="static-toggle" id="static-toggle">Добавить статические номера</div>
-          <div class="static-box is-hidden" id="static-box">
-            <div class="static-grid">
-              <div>Москва (495)</div><input id="sn-495" class="input" type="number" min="0" step="1" value="0">
-              <div>Москва (499)</div><input id="sn-499" class="input" type="number" min="0" step="1" value="0">
-              <div>С.-Петербург</div><input id="sn-spb" class="input" type="number" min="0" step="1" value="0">
-              <div>Региональные</div><input id="sn-reg" class="input" type="number" min="0" step="1" value="0">
-            </div>
-          </div>
+          <div class="row"><span>Доп. номера</span><span class="v" id="v-static">—</span></div>
           <hr>
           <div class="row total"><span>Итого</span><span class="v" id="v-total">—</span></div>
         </div>
