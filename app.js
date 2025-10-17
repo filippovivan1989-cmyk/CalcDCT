@@ -88,7 +88,7 @@ function buildAddons(){
     cb.disabled = included || (!available);
     cb.addEventListener('change', ()=>{
       if (optional){ state.user_choices[srv.name] = cb.checked; renderTotals(); renderCompare(); }
-      if (srv.name==='Расширенная Я.Метрика'){ sub.classList.toggle('is-visible', cb.checked && !cb.disabled); }
+      if (srv.name==='Расширенная Я.Метрика'){ sub.classList.toggle('is-visible', cb.checked); }
     });
     const label = document.createElement('label'); label.textContent = srv.name;
 
@@ -109,7 +109,7 @@ function buildAddons(){
       inp.addEventListener('input', ()=>{ state.metric_events = +inp.value || 0; renderTotals(); renderCompare(); });
       sub.appendChild(lbl); sub.appendChild(inp);
       row.appendChild(sub);
-      sub.classList.toggle('is-visible', cb.checked && !cb.disabled);
+      sub.classList.toggle('is-visible', cb.checked);
     }
 
     box.appendChild(row);
@@ -183,7 +183,13 @@ function renderTotals(){
   q('v-addons').textContent = money(otherAddons);
   const list = q('v-addons-list'); list.innerHTML = "";
   r.addonsList.forEach(it=>{ const div = document.createElement('div'); div.textContent = '• ' + it.name + ' — ' + money(it.price); list.appendChild(div); });
-  q('v-static').textContent = money(r.staticNumbers.cost);
+  const staticQty = Object.values(r.staticNumbers.qty || {}).reduce((acc, val)=> acc + (val||0), 0);
+  const staticRow = staticQty > 0 || r.staticNumbers.cost > 0
+    ? `${staticQty} шт — ${money(r.staticNumbers.cost)}`
+    : '0 шт — 0 ₽';
+  q('v-static').textContent = staticRow;
+  const summaryEl = q('static-summary');
+  if (summaryEl) summaryEl.textContent = `${staticQty} шт`;
   q('v-total').textContent = money(r.total);
 
   const box = document.getElementById('email-breakdown'); const el = document.getElementById('email-list'); el.innerHTML = "";

@@ -53,8 +53,15 @@ html,body{ margin:0; padding:0; font-family:Inter,system-ui,-apple-system,Segoe 
 .t-line{ display:flex; justify-content:space-between; padding:4px 0; }
 .t-val{ font-weight:700; color:#2d6cdf; }
 .t-badge{ position:absolute; right:10px; top:10px; background:#111827; color:#fff; font-size:12px; padding:4px 8px; border-radius:999px; box-shadow:var(--shadow); }
+.static-field{ margin-top:18px; padding-top:12px; border-top:1px dashed var(--border); }
+.static-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.static-head .label{ margin-bottom:0; }
+.static-summary{ font-size:13px; color:var(--muted); }
 .static-toggle{ margin-top:6px; font-size:13px; color:#2d6cdf; cursor:pointer; user-select:none; }
 .static-box{ margin-top:8px; padding:10px; border:1px dashed var(--border); border-radius:12px; }
 .static-grid{ display:grid; grid-template-columns: 1fr 120px; gap:10px; align-items:center; }
+.addon .subfield{ display:none; flex-direction:column; gap:4px; margin-left:26px; font-size:13px; }
+.addon .subfield .lbl{ color:var(--muted); }
+.addon .subfield.is-visible{ display:flex; }
 @media (max-width: 1200px){ .addons-grid{ grid-template-columns: repeat(2, 1fr);} .compare-grid{ grid-template-columns: 1fr; } }
 @media (max-width: 800px){ .grid-top{ grid-template-columns: 1fr; } .addons-grid{ grid-template-columns: 1fr; } }
