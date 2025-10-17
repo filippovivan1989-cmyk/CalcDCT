@@ -20,11 +20,11 @@
   "retentions": [
     {
       "label": "5 минут",
-      "coef": 0.05
+      "coef": 0.12
     },
     {
       "label": "15 минут",
-      "coef": 0.15
+      "coef": 0.18
     },
     {
       "label": "30 минут",
@@ -36,7 +36,7 @@
     },
     {
       "label": "120 минут",
-      "coef": 1.0
+      "coef": 1.2
     }
   ],
   "overage_markup": {
@@ -99,13 +99,13 @@
   "services": [
     {
       "name": "Робот-аналитик",
-      "price_lm": 1000,
+      "price_lm": 900,
       "price_mg": 0,
       "price_pap": 0
     },
     {
       "name": "Робот-маркетолог",
-      "price_lm": 900,
+      "price_lm": 1000,
       "price_mg": 0,
       "price_pap": 0
     },
@@ -125,43 +125,43 @@
       "name": "Отчет Чат-Трекинг",
       "price_lm": 700,
       "price_mg": 700,
-      "price_pap": 0
+      "price_pap": 700
     },
     {
       "name": "Отдельные пулы номеров для каналов",
       "price_lm": 1000,
       "price_mg": 1000,
-      "price_pap": 1000
+      "price_pap": 0
     },
     {
       "name": "Мультиканальная аналитика",
       "price_lm": 2400,
       "price_mg": 2400,
-      "price_pap": 2400
+      "price_pap": 0
     },
     {
       "name": "Роутинг звонков",
       "price_lm": 750,
       "price_mg": 750,
-      "price_pap": 750
+      "price_pap": 0
     },
     {
       "name": "Антиспам на продукте",
       "price_lm": 400,
       "price_mg": 400,
-      "price_pap": 400
+      "price_pap": 0
     },
     {
       "name": "Анализ конкурентов",
       "price_lm": 3500,
-      "price_mg": null,
-      "price_pap": null
+      "price_mg": 3500,
+      "price_pap": 3500
     },
     {
       "name": "Emailtracking",
       "price_lm": 1500,
       "price_mg": 1500,
-      "price_pap": 1500
+      "price_pap": 0
     },
     {
       "name": "Расширенная Я.Метрика",
