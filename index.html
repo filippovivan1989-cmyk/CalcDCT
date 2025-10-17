@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Калькулятор стоимости Коллтрекинга и Маркетинговой аналитики</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="page-header">
+    <div class="container">
+      <h1>Калькулятор стоимости Коллтрекинга и Маркетинговой аналитики</h1>
+      <p class="sub">Быстрый расчёт стоимости подключения и использования сервисов.</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- TOP: Параметры + Расчёт -->
+    <section class="grid-top">
+      <div class="card">
+        <h2 class="card-title">Параметры</h2>
+        <div class="field">
+          <label class="label">Тариф</label>
+          <div class="tariff-group" id="tariff-group" role="tablist" aria-label="Тарифы">
+            <button class="tariff-btn is-active" data-tariff="Лайм">Лайм</button>
+            <button class="tariff-btn" data-tariff="Манго">Манго</button>
+            <button class="tariff-btn" data-tariff="Папайя">Папайя</button>
+          </div>
+          <p class="hint">Выберите тариф. Активный выделен цветом.</p>
+        </div>
+        <div class="field">
+          <label class="label">Количество виджетов</label>
+          <select id="widgets" class="select"></select>
+          <p class="hint" id="widgets-hint"></p>
+        </div>
+        <div class="field">
+          <label class="label">Время закрепления</label>
+          <select id="retention" class="select"></select>
+        </div>
+        <div class="field">
+          <label class="label">Количество посетителей / трафик</label>
+          <div class="input-with-icon">
+            <span class="icon">👥</span>
+            <input id="traffic" class="input" type="number" min="0" step="100" value="6000" placeholder="Например, 6000">
+          </div>
+          <p class="hint">Это же значение используем для Email-Tracking.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 class="card-title">Расчёт</h2>
+        <div class="totals">
+          <div class="row"><span>Абонентская плата</span><span class="v" id="v-flat">—</span></div>
+          <div class="row"><span>МГП (пакет)</span><span class="v" id="v-mgp">—</span></div>
+          <div class="row"><span>Трафик сверх пакета</span><span class="v" id="v-over">—</span></div>
+          <div class="row"><span>Доплаты (коэфф./досписание)</span><span class="v" id="v-surcharge">—</span></div>
+          <div class="row"><span>Доп. виджеты</span><span class="v" id="v-widgets">—</span></div>
+          <div class="row"><span>Прочие доп. услуги (вкл. Email)</span><span class="v" id="v-addons">—</span></div>
+          <hr>
+          <div class="row total"><span>Итого</span><span class="v" id="v-total">—</span></div>
+        </div>
+        <div class="email-breakdown is-hidden" id="email-breakdown">
+          <div class="email-title">EmailTracking — разложение по диапазонам</div>
+          <ul id="email-list" class="email-list"></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- MIDDLE: Доп. услуги в 3-4 колонки -->
+    <section class="card fullwidth">
+      <h2 class="card-title">Дополнительные услуги</h2>
+      <div id="addons" class="addons-grid cols-3"></div>
+    </section>
+
+    <!-- BOTTOM: Сравнение -->
+    <section class="card fullwidth">
+      <div class="compare-header">
+        <h2 class="card-title">Сравнение тарифов</h2>
+        <label class="toggle"><input type="checkbox" id="toggle-compare" checked> Показать сравнение</label>
+      </div>
+
+      <div class="compare-grid" id="compare-grid">
+        <div class="t-card" data-tariff="Лайм">
+          <div class="t-title">Лайм</div>
+          <div class="t-line"><span>Итого</span><span class="t-val" id="c-Лайм">—</span></div>
+          <div class="t-line"><span>Трафик</span><span id="c-Лайм-traffic">—</span></div>
+          <div class="t-line"><span>Виджеты</span><span id="c-Лайм-widgets">—</span></div>
+          <div class="t-badge is-hidden">Недоступно</div>
+        </div>
+        <div class="t-card" data-tariff="Манго">
+          <div class="t-title">Манго</div>
+          <div class="t-line"><span>Итого</span><span class="t-val" id="c-Манго">—</span></div>
+          <div class="t-line"><span>Трафик</span><span id="c-Манго-traffic">—</span></div>
+          <div class="t-line"><span>Виджеты</span><span id="c-Манго-widgets">—</span></div>
+          <div class="t-badge is-hidden">Недоступно</div>
+        </div>
+        <div class="t-card" data-tariff="Папайя">
+          <div class="t-title">Папайя</div>
+          <div class="t-line"><span>Итого</span><span class="t-val" id="c-Папайя">—</span></div>
+          <div class="t-line"><span>Трафик</span><span id="c-Папайя-traffic">—</span></div>
+          <div class="t-line"><span>Виджеты</span><span id="c-Папайя-widgets">—</span></div>
+          <div class="t-badge is-hidden">Недоступно</div>
+        </div>
+      </div>
+      <p class="hint">Если выбранные услуги/виджеты недоступны на тарифе — карточка тарифа скрывается.</p>
+    </section>
+  </main>
+
+  <footer class="page-footer">
+    <div class="container">
+      <span class="muted">© Mango — внутренний инструмент оценки. Полноценный калькулятор v3.2</span>
+    </div>
+  </footer>
+
+  <script type="module" src="./engine.js"></script>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
