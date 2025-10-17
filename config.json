@@ -1,0 +1,13 @@
+{
+  "defaults": {
+    "tariff": "Лайм",
+    "retention": "30 минут",
+    "traffic": 6000,
+    "widgets": 1,
+    "email_traffic": 0,
+    "services_selected": {
+      "SIP-линия под виджет": true,
+      "Плата за виджет": true
+    }
+  }
+}
