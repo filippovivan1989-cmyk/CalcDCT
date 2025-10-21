@@ -10,7 +10,7 @@ html,body{ margin:0; padding:0; font-family:Inter,system-ui,-apple-system,Segoe 
 .page-header .sub{ margin:.25rem 0 0; color:var(--muted); }
 .page-footer{ padding:24px 0; }
 .muted{ color:var(--muted); }
-.grid-top{ display:grid; grid-template-columns: 1fr 1fr; gap:24px; align-items:stretch; margin:24px 0; }
+.grid-top{ display:block; margin:24px 0; }
 .card{ background:var(--card); border:1px solid var(--border); border-radius:16px; padding:16px; box-shadow:var(--shadow); height:100%; display:flex; flex-direction:column; }
 .card-title{ margin:0 0 10px; font-size:18px; }
 .fullwidth{ margin-top:8px; }

@@ -17,6 +17,12 @@ let state = {
 
 function q(id){ return document.getElementById(id); }
 
+function setText(id, value){
+  const el = q(id);
+  if (el) el.textContent = value;
+  return el;
+}
+
 function buildRetentions(){
   const sel = q('retention'); sel.innerHTML="";
   PRICE.retentions.forEach(r=>{
@@ -174,33 +180,42 @@ function renderTotals(){
     static_numbers: state.static_numbers
   };
   const r = calcTotal(PRICE, inputs);
-  q('v-flat').textContent = money(r.monthlyFlat);
-  q('v-mgp').textContent = money(r.traffic.packageRub);
-  q('v-over').textContent = money(r.traffic.extraWithMarkup);
-  q('v-surcharge').textContent = money(0);
-  q('v-widgets').textContent = money(r.widgets.cost) + (r.widgets.payable ? (' (' + r.widgets.payable + ' × ' + money(r.widgets.unit) + ')') : '');
+  setText('v-flat', money(r.monthlyFlat));
+  setText('v-mgp', money(r.traffic.packageRub));
+  setText('v-over', money(r.traffic.extraWithMarkup));
+  setText('v-surcharge', money(0));
+  setText('v-widgets', money(r.widgets.cost) + (r.widgets.payable ? (' (' + r.widgets.payable + ' × ' + money(r.widgets.unit) + ')') : ''));
   const otherAddons = r.addonsTotal - r.widgets.cost - r.staticNumbers.cost;
-  q('v-addons').textContent = money(otherAddons);
-  const list = q('v-addons-list'); list.innerHTML = "";
-  r.addonsList.forEach(it=>{ const div = document.createElement('div'); div.textContent = '• ' + it.name + ' — ' + money(it.price); list.appendChild(div); });
+  setText('v-addons', money(otherAddons));
+  const list = q('v-addons-list');
+  if (list){
+    list.innerHTML = "";
+    r.addonsList.forEach(it=>{ const div = document.createElement('div'); div.textContent = '• ' + it.name + ' — ' + money(it.price); list.appendChild(div); });
+  }
   const staticQty = Object.values(r.staticNumbers.qty || {}).reduce((acc, val)=> acc + (val||0), 0);
   const staticRow = staticQty > 0 || r.staticNumbers.cost > 0
     ? `${staticQty} шт — ${money(r.staticNumbers.cost)}`
     : '0 шт — 0 ₽';
-  q('v-static').textContent = staticRow;
+  setText('v-static', staticRow);
   const summaryEl = q('static-summary');
   if (summaryEl) summaryEl.textContent = `${staticQty} шт`;
-  q('v-total').textContent = money(r.total);
+  setText('v-total', money(r.total));
 
-  const box = document.getElementById('email-breakdown'); const el = document.getElementById('email-list'); el.innerHTML = "";
-  if (selections['Emailtracking'] && r.emailDetails && r.emailDetails.breakdown.length){
-    box.classList.remove('is-hidden');
-    r.emailDetails.breakdown.forEach(part=>{
-      const li = document.createElement('li');
-      li.textContent = part.from.toLocaleString('ru-RU') + '–' + part.to.toLocaleString('ru-RU') + ' × ' + part.rate.toFixed(2) + ' ₽ = ' + money(part.cost);
-      el.appendChild(li);
-    });
-  } else { box.classList.add('is-hidden'); }
+  const box = q('email-breakdown');
+  const el = q('email-list');
+  if (box && el){
+    el.innerHTML = "";
+    if (selections['Emailtracking'] && r.emailDetails && r.emailDetails.breakdown.length){
+      box.classList.remove('is-hidden');
+      r.emailDetails.breakdown.forEach(part=>{
+        const li = document.createElement('li');
+        li.textContent = part.from.toLocaleString('ru-RU') + '–' + part.to.toLocaleString('ru-RU') + ' × ' + part.rate.toFixed(2)+ ' ₽ = ' + money(part.cost);
+        el.appendChild(li);
+      });
+    } else {
+      box.classList.add('is-hidden');
+    }
+  }
 }
 
 function renderCompare(){
