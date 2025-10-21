@@ -32,40 +32,50 @@
         </div>
         -->
         <div class="params-grid">
-          <div class="field vat-field">
-            <label class="label" for="vats">Версия ВАТС</label>
-            <div class="vat-line">
-              <select id="vats" class="select"></select>
+          <div class="params-column">
+            <div class="field">
+              <label class="label">Количество посетителей / трафик</label>
+              <div class="input-with-icon">
+                <span class="icon">👥</span>
+                <input id="traffic" class="input" type="number" min="0" step="100" value="6000" placeholder="Например, 6000">
+              </div>
+              <p class="hint">Это же значение используем для Email-Tracking.</p>
+            </div>
+            <div class="field">
+              <label class="label">Время закрепления</label>
+              <select id="retention" class="select"></select>
+            </div>
+            <div class="field">
+              <label class="label">Количество виджетов</label>
+              <select id="widgets" class="select"></select>
+              <p class="hint" id="widgets-hint"></p>
+            </div>
+          </div>
+          <div class="params-column">
+            <div class="field vat-field">
+              <label class="label" for="vats">Версия ВАТС</label>
+              <div class="vat-line">
+                <select id="vats" class="select"></select>
+                <label class="checkbox">
+                  <input type="checkbox" id="vats-new">
+                  <span>Новый клиент</span>
+                </label>
+              </div>
+              <p class="hint" id="vats-hint"></p>
+            </div>
+            <div class="field checkbox-field">
               <label class="checkbox">
-                <input type="checkbox" id="vats-new">
-                <span>Новый клиент</span>
+                <input type="checkbox" id="vats-api">
+                <span>Интеграция с CRM</span>
+              </label>
+              <p class="hint" id="vats-api-hint"></p>
+            </div>
+            <div class="field checkbox-field">
+              <label class="checkbox">
+                <input type="checkbox" id="crm-sa">
+                <span>Интеграция CRM-СА</span>
               </label>
             </div>
-            <p class="hint" id="vats-hint"></p>
-          </div>
-          <div class="field checkbox-field">
-            <label class="checkbox">
-              <input type="checkbox" id="vats-api">
-              <span>Двусторонняя интеграция с Аналитикой</span>
-            </label>
-            <p class="hint" id="vats-api-hint"></p>
-          </div>
-          <div class="field">
-            <label class="label">Количество виджетов</label>
-            <select id="widgets" class="select"></select>
-            <p class="hint" id="widgets-hint"></p>
-          </div>
-          <div class="field">
-            <label class="label">Время закрепления</label>
-            <select id="retention" class="select"></select>
-          </div>
-          <div class="field">
-            <label class="label">Количество посетителей / трафик</label>
-            <div class="input-with-icon">
-              <span class="icon">👥</span>
-              <input id="traffic" class="input" type="number" min="0" step="100" value="6000" placeholder="Например, 6000">
-            </div>
-            <p class="hint">Это же значение используем для Email-Tracking.</p>
           </div>
           <div class="field static-field">
             <div class="static-head">

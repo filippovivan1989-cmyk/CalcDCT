@@ -24,7 +24,8 @@ let state = {
   static_numbers: { msk495:0, msk499:0, spb:0, reg:0 },
   vatsVersion: '',
   vatsApi: false,
-  vatsNewClient: false
+  vatsNewClient: false,
+  crmSaIntegration: false
 };
 
 const detailOpenState = {};
@@ -123,9 +124,9 @@ function updateVatHints(){
     if (!hasVat){
       apiHint.textContent = 'Сначала выберите версию ВАТС.';
     } else if (state.vatsApi){
-      apiHint.textContent = `Добавлено ${money(vat.apiCost)} к стоимости.`;
+      apiHint.textContent = `Добавлено ${money(vat.apiCost)} за интеграцию с CRM.`;
     } else {
-      apiHint.textContent = `При активации добавит ${money(vat.apiCost)}.`;
+      apiHint.textContent = `При активации добавит ${money(vat.apiCost)} за интеграцию с CRM.`;
     }
   }
   updateStaticWarning();
@@ -286,6 +287,14 @@ function bindBasics(){
     });
   }
 
+  const crmSa = q('crm-sa');
+  if (crmSa){
+    crmSa.addEventListener('change', ()=>{
+      state.crmSaIntegration = crmSa.checked;
+      renderCompare();
+    });
+  }
+
   document.querySelectorAll('.t-details-toggle').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       const card = btn.closest('.t-card');
@@ -365,7 +374,7 @@ function breakdownForTotals(totals){
     parts.push({ label: 'Номер', amount: totals.vatCharges.newNumber });
   }
   if (totals.vatCharges && totals.vatCharges.api){
-    parts.push({ label: 'API ВАТС', amount: totals.vatCharges.api });
+    parts.push({ label: 'Интеграция с CRM', amount: totals.vatCharges.api });
   }
   parts.push({ label: 'Трафик (пакет)', amount: totals.traffic.packageRub });
   parts.push({ label: 'Трафик сверх пакета', amount: totals.traffic.extraWithMarkup });
@@ -436,6 +445,16 @@ function renderCompare(){
   tariffs.forEach(t=>{
     const el = document.querySelector('.t-card[data-tariff="' + t + '"]');
     if (!el) return;
+
+    if (state.crmSaIntegration && t === 'Лайм'){
+      el.style.display = "none";
+      detailOpenState[t] = false;
+      const badge = el.querySelector('.t-badge');
+      if (badge) badge.classList.add('is-hidden');
+      const note = el.querySelector('.t-note');
+      if (note) note.classList.add('is-hidden');
+      return;
+    }
 
     let ok = true;
     for (const name of required){
