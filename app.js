@@ -17,24 +17,6 @@ let state = {
 
 function q(id){ return document.getElementById(id); }
 
-function setupToggle(toggleId, targetId){
-  const toggleEl = q(toggleId);
-  const targetEl = q(targetId);
-  if (!toggleEl || !targetEl) return;
-
-  const update = expanded => {
-    toggleEl.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-    targetEl.classList.toggle('is-hidden', !expanded);
-  };
-
-  update(!targetEl.classList.contains('is-hidden'));
-
-  toggleEl.addEventListener('click', ()=>{
-    const expanded = toggleEl.getAttribute('aria-expanded') === 'true';
-    update(!expanded);
-  });
-}
-
 function buildRetentions(){
   const sel = q('retention'); sel.innerHTML="";
   PRICE.retentions.forEach(r=>{
@@ -153,7 +135,7 @@ function bindBasics(){
   q('toggle-compare').addEventListener('change', ()=>{ q('compare-grid').style.display = q('toggle-compare').checked ? "grid" : "none"; });
 
   // Static numbers
-  setupToggle('static-toggle', 'static-box');
+  q('static-toggle').addEventListener('click', ()=>{ q('static-box').classList.toggle('is-hidden'); });
   ['sn-495','sn-499','sn-spb','sn-reg'].forEach(id=>{
     q(id).addEventListener('input', ()=>{
       state.static_numbers = {
