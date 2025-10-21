@@ -378,7 +378,6 @@ function bindBasics(){
   });
 
   // Static numbers
-  q('static-toggle').addEventListener('click', ()=>{ q('static-box').classList.toggle('is-hidden'); });
   ['sn-495','sn-499','sn-spb','sn-reg'].forEach(id=>{
     q(id).addEventListener('input', ()=>{
       state.static_numbers = {
