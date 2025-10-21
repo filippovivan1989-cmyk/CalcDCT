@@ -32,7 +32,7 @@
         </div>
         -->
         <div class="params-grid">
-          <div class="params-column">
+          <div class="params-primary">
             <div class="field">
               <label class="label">Количество посетителей / трафик</label>
               <div class="input-with-icon">
@@ -51,38 +51,47 @@
               <p class="hint" id="widgets-hint"></p>
             </div>
           </div>
-          <div class="params-column">
-            <div class="field vat-field">
-              <label class="label" for="vats">Версия ВАТС</label>
-              <div class="vat-line">
-                <select id="vats" class="select"></select>
+
+          <div class="field static-field vat-static-field">
+            <div class="static-head">
+              <span class="label">Настройки ВАТС</span>
+              <span class="static-summary" id="vat-summary">Не выбрана</span>
+            </div>
+            <div class="static-toggle" id="vat-toggle" role="button" tabindex="0" aria-controls="vat-box" aria-expanded="false">Настроить ВАТС</div>
+            <div class="static-box is-hidden" id="vat-box">
+              <div class="vat-field">
+                <label class="label" for="vats">Версия ВАТС</label>
+                <div class="vat-line">
+                  <select id="vats" class="select"></select>
+                  <label class="checkbox">
+                    <input type="checkbox" id="vats-new">
+                    <span>Новый клиент</span>
+                  </label>
+                </div>
+                <p class="hint" id="vats-hint"></p>
+              </div>
+              <div class="checkbox-field">
                 <label class="checkbox">
-                  <input type="checkbox" id="vats-new">
-                  <span>Новый клиент</span>
+                  <input type="checkbox" id="vats-api">
+                  <span>Интеграция с CRM</span>
+                </label>
+                <p class="hint" id="vats-api-hint"></p>
+              </div>
+              <div class="checkbox-field">
+                <label class="checkbox">
+                  <input type="checkbox" id="crm-sa">
+                  <span>Интеграция CRM-СА</span>
                 </label>
               </div>
-              <p class="hint" id="vats-hint"></p>
-            </div>
-            <div class="field checkbox-field">
-              <label class="checkbox">
-                <input type="checkbox" id="vats-api">
-                <span>Интеграция с CRM</span>
-              </label>
-              <p class="hint" id="vats-api-hint"></p>
-            </div>
-            <div class="field checkbox-field">
-              <label class="checkbox">
-                <input type="checkbox" id="crm-sa">
-                <span>Интеграция CRM-СА</span>
-              </label>
             </div>
           </div>
+
           <div class="field static-field">
             <div class="static-head">
               <span class="label">Доп. статические номера</span>
               <span class="static-summary" id="static-summary">0 шт</span>
             </div>
-            <div class="static-toggle" id="static-toggle">Добавить статические номера</div>
+            <div class="static-toggle" id="static-toggle" role="button" tabindex="0" aria-controls="static-box" aria-expanded="false">Добавить статические номера</div>
             <div class="static-box is-hidden" id="static-box">
               <div class="static-grid">
                 <div>Москва (495)</div><input id="sn-495" class="input" type="number" min="0" step="1" value="0">
@@ -119,17 +128,19 @@
       -->
     </section>
 
-    <section class="card fullwidth">
-      <h2 class="card-title">Дополнительные услуги</h2>
-      <div id="addons" class="addons-grid"></div>
+    <section class="card fullwidth" id="card-addons">
+      <h2 class="card-title">
+        <button class="collapse-button" type="button" id="addons-toggle" aria-expanded="false" aria-controls="addons">
+          <span>Дополнительные услуги</span>
+          <span class="collapse-arrow" aria-hidden="true"></span>
+        </button>
+      </h2>
+      <div id="addons" class="addons-grid" hidden></div>
     </section>
 
     <section class="card fullwidth">
-      <div class="compare-header">
-        <h2 class="card-title">Сравнение тарифов</h2>
-        <label class="toggle"><input type="checkbox" id="toggle-compare" checked> Показать сравнение</label>
-      </div>
-
+      <h2 class="card-title">Сравнение тарифов</h2>
+      <p class="compare-disclaimer" id="compare-disclaimer" hidden></p>
       <div class="compare-grid" id="compare-grid">
         <div class="t-card" data-tariff="Лайм">
           <div class="t-title">Лайм</div>

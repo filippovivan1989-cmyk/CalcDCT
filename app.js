@@ -29,6 +29,7 @@ let state = {
 };
 
 const detailOpenState = {};
+let addonsExpanded = false;
 
 function q(id){ return document.getElementById(id); }
 
@@ -36,6 +37,41 @@ function setText(id, value){
   const el = q(id);
   if (el) el.textContent = value;
   return el;
+}
+
+function setupToggle(triggerId, boxId){
+  const trigger = q(triggerId);
+  const box = q(boxId);
+  if (!trigger || !box) return;
+  const applyState = ()=>{
+    const expanded = !box.classList.contains('is-hidden');
+    trigger.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+  };
+  const toggle = ()=>{
+    box.classList.toggle('is-hidden');
+    applyState();
+  };
+  trigger.addEventListener('click', toggle);
+  trigger.addEventListener('keydown', evt=>{
+    if (evt.key === 'Enter' || evt.key === ' '){
+      evt.preventDefault();
+      toggle();
+    }
+  });
+  applyState();
+}
+
+function setAddonsOpen(open){
+  addonsExpanded = !!open;
+  const box = q('addons');
+  if (box){
+    if (addonsExpanded){ box.removeAttribute('hidden'); }
+    else { box.setAttribute('hidden', ''); }
+  }
+  const toggle = q('addons-toggle');
+  if (toggle){
+    toggle.setAttribute('aria-expanded', addonsExpanded ? 'true' : 'false');
+  }
 }
 
 function vatOptionByValue(value){
@@ -89,6 +125,7 @@ function updateVatHints(){
   const vat = currentVatOption();
   const selectHint = q('vats-hint');
   const vatNew = q('vats-new');
+  const summary = q('vat-summary');
   if (selectHint){
     if (!state.vatsVersion){
       selectHint.textContent = 'Выберите версию ВАТС, чтобы учесть абонплату и ограничения по номерам.';
@@ -138,6 +175,18 @@ function updateVatHints(){
       apiHint.textContent = `Добавлено ${money(vat.apiCost)} за интеграцию с CRM.`;
     } else {
       apiHint.textContent = `При активации добавит ${money(vat.apiCost)} за интеграцию с CRM.`;
+    }
+  }
+  if (summary){
+    if (!state.vatsVersion){
+      summary.textContent = 'Не выбрана';
+    } else {
+      const parts = [];
+      if (vat && vat.label) parts.push(vat.label);
+      if (state.vatsApi) parts.push('CRM');
+      if (state.crmSaIntegration) parts.push('CRM-СА');
+      if (state.vatsNewClient) parts.push('новый клиент');
+      summary.textContent = parts.join(', ') || 'Не выбрана';
     }
   }
   updateStaticWarning();
@@ -250,6 +299,7 @@ function buildAddons(){
 
     box.appendChild(row);
   }
+  setAddonsOpen(addonsExpanded);
 }
 
 function bindBasics(){
@@ -268,7 +318,6 @@ function bindBasics(){
   q('widgets').addEventListener('change', ()=>{ state.widgets = +q('widgets').value; renderTotals(); renderCompare(); });
   q('retention').addEventListener('change', ()=>{ state.retention = q('retention').value; renderTotals(); renderCompare(); });
   q('traffic').addEventListener('input', ()=>{ state.traffic = +q('traffic').value || 0; state.email_traffic = state.traffic; renderTotals(); renderCompare(); });
-  q('toggle-compare').addEventListener('change', ()=>{ q('compare-grid').style.display = q('toggle-compare').checked ? "grid" : "none"; });
 
   const vatSelect = q('vats');
   if (vatSelect){
@@ -302,9 +351,20 @@ function bindBasics(){
   if (crmSa){
     crmSa.addEventListener('change', ()=>{
       state.crmSaIntegration = crmSa.checked;
+      updateVatHints();
       renderCompare();
     });
   }
+
+  const addonsToggle = q('addons-toggle');
+  if (addonsToggle){
+    addonsToggle.addEventListener('click', ()=>{
+      setAddonsOpen(!addonsExpanded);
+    });
+  }
+
+  setupToggle('static-toggle', 'static-box');
+  setupToggle('vat-toggle', 'vat-box');
 
   document.querySelectorAll('.t-details-toggle').forEach(btn=>{
     btn.addEventListener('click', ()=>{
@@ -450,6 +510,29 @@ function renderTotals(){
   updateVatHints();
 }
 
+function updateCompareDisclaimer(){
+  const el = q('compare-disclaimer');
+  if (!el) return;
+  const parts = [];
+  const hasNumberFees = state.vatsNewClient || staticNumbersTotal() > 0;
+  if (hasNumberFees){
+    parts.push('разовые платежи за номера');
+  }
+  if (state.vatsVersion){
+    parts.push('МГП ВАТС');
+  }
+  if (!parts.length){
+    el.textContent = '';
+    el.setAttribute('hidden', '');
+    return;
+  }
+  const text = parts.length === 1
+    ? `В расчёт не включается ${parts[0]}.`
+    : `В расчёт не включаются ${parts.join(' и ')}.`;
+  el.textContent = text;
+  el.removeAttribute('hidden');
+}
+
 function renderCompare(){
   const tariffs = PRICE.tariffs.map(t=>t.name);
   const required = requiredServicesOnCurrentTariff();
@@ -540,6 +623,7 @@ function renderCompare(){
       }
     }
   });
+  updateCompareDisclaimer();
 }
 
 async function main(){
@@ -547,6 +631,7 @@ async function main(){
   buildRetentions();
   buildWidgetsOptions();
   buildAddons();
+  setAddonsOpen(false);
   buildVatOptions();
   updateVatHints();
   bindBasics();
