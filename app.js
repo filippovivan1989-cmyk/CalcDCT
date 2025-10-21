@@ -10,6 +10,7 @@ const VAT_OPTIONS = [
   { value: 'extended', label: 'Расширенная', monthly: 2500, sipIncluded: 0, sipFee: 150, maxNumbers: 15, apiCost: 3000 },
   { value: 'max', label: 'Максимальная', monthly: 3600, sipIncluded: 0, sipFee: 0, maxNumbers: Infinity, apiCost: 5500 }
 ];
+const NEW_CLIENT_NUMBER_COST = 200;
 
 let PRICE=null;
 let state = {
@@ -22,8 +23,11 @@ let state = {
   metric_events: 0,
   static_numbers: { msk495:0, msk499:0, spb:0, reg:0 },
   vatsVersion: '',
-  vatsApi: false
+  vatsApi: false,
+  vatsNewClient: false
 };
+
+const detailOpenState = {};
 
 function q(id){ return document.getElementById(id); }
 
@@ -83,17 +87,31 @@ function updateStaticWarning(){
 function updateVatHints(){
   const vat = currentVatOption();
   const selectHint = q('vats-hint');
+  const vatNew = q('vats-new');
   if (selectHint){
     if (!state.vatsVersion){
       selectHint.textContent = 'Выберите версию ВАТС, чтобы учесть абонплату и ограничения по номерам.';
     } else {
       const limit = (vat.maxNumbers === Infinity) ? 'без ограничений' : `до ${vat.maxNumbers}`;
-      selectHint.textContent = `Абонентская плата: ${money(vat.monthly)}. Доступно номеров: ${limit}.`;
+      const bundle = money((vat.monthly || 0) + NEW_CLIENT_NUMBER_COST);
+      const prefix = state.vatsNewClient
+        ? `Добавлено ${bundle} (ВАТС + номер).`
+        : `Для новых клиентов добавится ${bundle}.`;
+      selectHint.textContent = `Абонентская плата: ${money(vat.monthly)}. Доступно номеров: ${limit}. ${prefix}`;
     }
   }
   const apiInput = q('vats-api');
   const apiHint = q('vats-api-hint');
   const hasVat = !!state.vatsVersion;
+  if (vatNew){
+    vatNew.disabled = !hasVat;
+    if (!hasVat){
+      vatNew.checked = false;
+      state.vatsNewClient = false;
+    } else {
+      vatNew.checked = state.vatsNewClient;
+    }
+  }
   if (apiInput){
     apiInput.disabled = !hasVat;
     if (!hasVat){
@@ -249,6 +267,15 @@ function bindBasics(){
       renderCompare();
     });
   }
+  const vatNew = q('vats-new');
+  if (vatNew){
+    vatNew.addEventListener('change', ()=>{
+      state.vatsNewClient = vatNew.checked;
+      updateVatHints();
+      renderTotals();
+      renderCompare();
+    });
+  }
   const vatApi = q('vats-api');
   if (vatApi){
     vatApi.addEventListener('change', ()=>{
@@ -261,19 +288,12 @@ function bindBasics(){
 
   document.querySelectorAll('.t-details-toggle').forEach(btn=>{
     btn.addEventListener('click', ()=>{
-      const targetId = btn.getAttribute('data-target');
-      const box = targetId ? document.getElementById(targetId) : null;
-      if (!box) return;
-      const isHidden = box.hasAttribute('hidden');
-      if (isHidden){
-        box.removeAttribute('hidden');
-        btn.setAttribute('aria-expanded', 'true');
-        btn.textContent = 'Скрыть расчёт';
-      } else {
-        box.setAttribute('hidden', '');
-        btn.setAttribute('aria-expanded', 'false');
-        btn.textContent = 'Показать расчёт';
-      }
+      const card = btn.closest('.t-card');
+      if (!card) return;
+      const tariffName = card.dataset.tariff;
+      if (!tariffName) return;
+      detailOpenState[tariffName] = !detailOpenState[tariffName];
+      renderCompare();
     });
   });
 
@@ -313,8 +333,9 @@ function totalsForTariff(tariff, selectionsOverride){
     if (vat.sipFee != null) widgetOverrides.sipFee = vat.sipFee;
   }
   const vatCharges = {
-    monthly: state.vatsVersion ? (vat.monthly || 0) : 0,
-    api: (state.vatsVersion && state.vatsApi) ? (vat.apiCost || 0) : 0
+    monthly: (state.vatsVersion && state.vatsNewClient) ? (vat.monthly || 0) : 0,
+    api: (state.vatsVersion && state.vatsApi) ? (vat.apiCost || 0) : 0,
+    newNumber: (state.vatsVersion && state.vatsNewClient) ? NEW_CLIENT_NUMBER_COST : 0
   };
   const inputs = {
     tariff,
@@ -329,6 +350,7 @@ function totalsForTariff(tariff, selectionsOverride){
   const totals = calcTotal(PRICE, inputs, { widgetOverrides, vatCharges });
   totals.vatOption = vat;
   totals.selections = selections;
+  totals.isNewClient = !!state.vatsNewClient;
   return totals;
 }
 
@@ -339,16 +361,24 @@ function breakdownForTotals(totals){
     const caption = totals.vatOption && totals.vatOption.label ? `ВАТС (${totals.vatOption.label})` : 'ВАТС';
     parts.push({ label: caption, amount: totals.vatCharges.monthly });
   }
+  if (totals.vatCharges && totals.vatCharges.newNumber){
+    parts.push({ label: 'Номер', amount: totals.vatCharges.newNumber });
+  }
   if (totals.vatCharges && totals.vatCharges.api){
     parts.push({ label: 'API ВАТС', amount: totals.vatCharges.api });
   }
   parts.push({ label: 'Трафик (пакет)', amount: totals.traffic.packageRub });
   parts.push({ label: 'Трафик сверх пакета', amount: totals.traffic.extraWithMarkup });
-  parts.push({ label: `Виджеты: платно ${totals.widgets.payable} из ${totals.widgets.capped}`, amount: totals.widgets.widgetCost });
-  const sipLabel = `SIP-линии: платно ${totals.widgets.sipPayable} из ${totals.widgets.capped}`;
-  parts.push({ label: sipLabel, amount: totals.widgets.sipCost });
+  if (totals.widgets.widgetCost > 0){
+    parts.push({ label: 'Виджеты', amount: totals.widgets.widgetCost });
+  }
+  if (totals.widgets.sipCost > 0){
+    parts.push({ label: 'SIP-линии', amount: totals.widgets.sipCost });
+  }
   const staticQty = Object.values(totals.staticNumbers.qty || {}).reduce((acc, val)=> acc + (val||0), 0);
-  parts.push({ label: `Доп. номера (${staticQty} шт)`, amount: totals.staticNumbers.cost });
+  if (totals.staticNumbers.cost > 0 && staticQty > 0){
+    parts.push({ label: `Доп. номера (${staticQty} шт)`, amount: totals.staticNumbers.cost });
+  }
   parts.push({ label: 'Доп. услуги', amount: totals.addonsCost, list: totals.addonsList });
   parts.push({ label: 'Итого', amount: totals.total, isTotal: true });
   return parts;
@@ -420,6 +450,7 @@ function renderCompare(){
     el.style.display = ok ? "block" : "none";
     el.querySelector('.t-badge').classList.toggle('is-hidden', ok);
     if (!ok){
+      detailOpenState[t] = false;
       const note = el.querySelector('.t-note');
       if (note) note.classList.add('is-hidden');
       return;
@@ -446,7 +477,6 @@ function renderCompare(){
     const detailBox = el.querySelector('.t-details');
     if (detailBox){
       const breakdown = breakdownForTotals(totals);
-      const wasHidden = detailBox.hasAttribute('hidden');
       detailBox.innerHTML = '';
       breakdown.forEach(item => {
         const row = document.createElement('div');
@@ -471,12 +501,12 @@ function renderCompare(){
           detailBox.appendChild(sub);
         }
       });
-      if (wasHidden) detailBox.setAttribute('hidden', ''); else detailBox.removeAttribute('hidden');
+      const opened = !!detailOpenState[t];
+      if (opened) detailBox.removeAttribute('hidden'); else detailBox.setAttribute('hidden', '');
       const toggle = el.querySelector('.t-details-toggle');
       if (toggle){
-        const isHidden = detailBox.hasAttribute('hidden');
-        toggle.setAttribute('aria-expanded', isHidden ? 'false' : 'true');
-        toggle.textContent = isHidden ? 'Показать расчёт' : 'Скрыть расчёт';
+        toggle.setAttribute('aria-expanded', opened ? 'true' : 'false');
+        toggle.textContent = opened ? 'Скрыть расчёт' : 'Показать расчёт';
       }
     }
   });

@@ -107,8 +107,15 @@ export function calcTotal(PRICE, inputs, options = {}){
   const stat = calcStaticNumbersCost(inputs, PRICE);
   const addonsCost = addons + emailCost;
   const monthlyFlat = t.monthly_flat || 0;
-  const vatCharges = options.vatCharges || { monthly:0, api:0 };
-  const total = monthlyFlat + (vatCharges.monthly||0) + (vatCharges.api||0) + traffic.totalTrafficRub + widgets.cost + stat.cost + addonsCost;
+  const vatCharges = options.vatCharges || { monthly:0, api:0, newNumber:0 };
+  const total = monthlyFlat
+    + (vatCharges.monthly||0)
+    + (vatCharges.api||0)
+    + (vatCharges.newNumber||0)
+    + traffic.totalTrafficRub
+    + widgets.cost
+    + stat.cost
+    + addonsCost;
   return {
     monthlyFlat,
     traffic,
