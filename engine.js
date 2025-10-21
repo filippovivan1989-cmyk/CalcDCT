@@ -15,16 +15,38 @@ function pickPriceByTariff(srv, tariffName){
   if (/манго/i.test(tariffName)) return srv.price_mg;
   return srv.price_pap;
 }
-export function calcWidgetCost(PRICE, tariffName, widgets){
+export function calcWidgetCost(PRICE, tariffName, widgets, overrides = {}){
   const rules = PRICE.widgets_rules[tariffName] || {max:null, free:0};
   const pricing = PRICE.widgets_pricing[tariffName] || {widget_fee:0, sip_line_fee:0};
   const max = (rules.max==null ? Infinity : Math.max(0, rules.max));
-  const free = Math.max(0, rules.free||0);
-  const capped = Math.min(widgets||0, max);
-  const payable = Math.max(0, capped - free);
-  const unit = (pricing.widget_fee||0) + (pricing.sip_line_fee||0);
-  const cost = payable * unit;
-  return { max, free, capped, payable, unit, cost, widget_fee: pricing.widget_fee||0, sip_line_fee: pricing.sip_line_fee||0 };
+  const requested = widgets||0;
+  const capped = Math.min(requested, max);
+  const freeWidgets = Math.max(0, Math.min(capped, rules.free||0));
+  const payableWidgets = Math.max(0, capped - freeWidgets);
+  const widgetFee = pricing.widget_fee || 0;
+  const widgetCost = payableWidgets * widgetFee;
+
+  const sipIncludedOverride = overrides.sipIncluded;
+  const sipFeeOverride = overrides.sipFee;
+  const sipFee = (sipFeeOverride != null) ? sipFeeOverride : (pricing.sip_line_fee || 0);
+  const sipIncluded = (sipIncludedOverride != null) ? Math.max(0, sipIncludedOverride) : freeWidgets;
+  const sipPayable = Math.max(0, capped - sipIncluded);
+  const sipCost = sipPayable * sipFee;
+
+  const cost = widgetCost + sipCost;
+  return {
+    max,
+    free: freeWidgets,
+    capped,
+    payable: payableWidgets,
+    widget_fee: widgetFee,
+    sip_line_fee: sipFee,
+    widgetCost,
+    sipIncluded,
+    sipPayable,
+    sipCost,
+    cost
+  };
 }
 export function calcTrafficCost(PRICE, {tariff, retention, traffic}){
   const t = tInfo(PRICE, tariff);
@@ -64,10 +86,11 @@ export function calcStaticNumbersCost(inputs, PRICE){
   const cost = (qty.msk495||0)*rates.msk495 + (qty.msk499||0)*rates.msk499 + (qty.spb||0)*rates.spb + (qty.reg||0)*rates.reg;
   return { cost, rates, qty };
 }
-export function calcTotal(PRICE, inputs){
+export function calcTotal(PRICE, inputs, options = {}){
   const t = tInfo(PRICE, inputs.tariff);
   const traffic = calcTrafficCost(PRICE, inputs);
-  const widgets = calcWidgetCost(PRICE, inputs.tariff, inputs.widgets||1);
+  const widgetOverrides = options.widgetOverrides || {};
+  const widgets = calcWidgetCost(PRICE, inputs.tariff, inputs.widgets||1, widgetOverrides);
   let addons = 0; const selected = inputs.services_selected || {}; const addonsList = [];
   for (const srv of PRICE.services){
     if (!selected[srv.name]) continue;
@@ -82,8 +105,21 @@ export function calcTotal(PRICE, inputs){
   let emailCost = 0, emailDetails = null;
   if (selected['Emailtracking']) { const e = calcEmailOverage(PRICE, inputs.tariff, inputs.email_traffic||0); emailCost = e.cost; emailDetails = e; if (emailCost>0) addonsList.push({ name: 'EmailTracking: сверх пакета', price: emailCost }); }
   const stat = calcStaticNumbersCost(inputs, PRICE);
-  const addonsTotal = addons + emailCost + widgets.cost + stat.cost;
+  const addonsCost = addons + emailCost;
   const monthlyFlat = t.monthly_flat || 0;
-  const total = monthlyFlat + traffic.totalTrafficRub + addonsTotal;
-  return { monthlyFlat, traffic, widgets, addonsTotal, total, emailDetails, addonsList, staticNumbers: stat };
+  const vatCharges = options.vatCharges || { monthly:0, api:0 };
+  const total = monthlyFlat + (vatCharges.monthly||0) + (vatCharges.api||0) + traffic.totalTrafficRub + widgets.cost + stat.cost + addonsCost;
+  return {
+    monthlyFlat,
+    traffic,
+    widgets,
+    addonsCost,
+    addonsList,
+    staticNumbers: stat,
+    emailDetails,
+    emailCost,
+    servicesCost: addons,
+    vatCharges,
+    total
+  };
 }
