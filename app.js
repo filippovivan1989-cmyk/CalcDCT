@@ -103,6 +103,7 @@ function updateVatHints(){
   }
   const apiInput = q('vats-api');
   const apiHint = q('vats-api-hint');
+  const crmSa = q('crm-sa');
   const hasVat = !!state.vatsVersion;
   if (vatNew){
     vatNew.disabled = !hasVat;
@@ -118,6 +119,16 @@ function updateVatHints(){
     if (!hasVat){
       apiInput.checked = false;
       state.vatsApi = false;
+    }
+  }
+  if (crmSa){
+    const allowCrmSa = hasVat && state.vatsApi;
+    crmSa.disabled = !allowCrmSa;
+    if (!allowCrmSa){
+      crmSa.checked = false;
+      state.crmSaIntegration = false;
+    } else {
+      crmSa.checked = state.crmSaIntegration;
     }
   }
   if (apiHint){
