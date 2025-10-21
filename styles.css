@@ -15,6 +15,9 @@ html,body{ margin:0; padding:0; font-family:Inter,system-ui,-apple-system,Segoe 
 .card{ background:var(--card); border:1px solid var(--border); border-radius:16px; padding:16px; box-shadow:var(--shadow); height:100%; display:flex; flex-direction:column; }
 .card-title{ margin:0 0 10px; font-size:18px; }
 .fullwidth{ margin-top:8px; }
+.params-grid{ display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap:16px 20px; margin-top:8px; }
+.params-grid .field{ margin:0; }
+.params-grid .static-field{ grid-column:1 / -1; margin-top:12px; }
 .field{ margin:14px 0; }
 .label{ display:block; font-size:13px; color:#6b7280; margin-bottom:6px; }
 .hint{ margin:6px 0 0; font-size:12px; color:#6b7280; }
@@ -65,4 +68,5 @@ html,body{ margin:0; padding:0; font-family:Inter,system-ui,-apple-system,Segoe 
 .addon .subfield .lbl{ color:var(--muted); }
 .addon .subfield.is-visible{ display:flex; }
 @media (max-width: 1200px){ .addons-grid{ grid-template-columns: repeat(2, 1fr);} .compare-grid{ grid-template-columns: 1fr; } }
+@media (max-width: 720px){ .params-grid{ grid-template-columns: 1fr; } }
 @media (max-width: 800px){ .grid-top{ grid-template-columns: 1fr; } .addons-grid{ grid-template-columns: 1fr; } }

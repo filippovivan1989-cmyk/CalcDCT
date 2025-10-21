@@ -31,35 +31,37 @@
           <p class="hint">Выберите тариф. Активный выделен цветом.</p>
         </div>
         -->
-        <div class="field">
-          <label class="label">Количество виджетов</label>
-          <select id="widgets" class="select"></select>
-          <p class="hint" id="widgets-hint"></p>
-        </div>
-        <div class="field">
-          <label class="label">Время закрепления</label>
-          <select id="retention" class="select"></select>
-        </div>
-        <div class="field">
-          <label class="label">Количество посетителей / трафик</label>
-          <div class="input-with-icon">
-            <span class="icon">👥</span>
-            <input id="traffic" class="input" type="number" min="0" step="100" value="6000" placeholder="Например, 6000">
+        <div class="params-grid">
+          <div class="field">
+            <label class="label">Количество виджетов</label>
+            <select id="widgets" class="select"></select>
+            <p class="hint" id="widgets-hint"></p>
           </div>
-          <p class="hint">Это же значение используем для Email-Tracking.</p>
-        </div>
-        <div class="field static-field">
-          <div class="static-head">
-            <span class="label">Доп. статические номера</span>
-            <span class="static-summary" id="static-summary">0 шт</span>
+          <div class="field">
+            <label class="label">Время закрепления</label>
+            <select id="retention" class="select"></select>
           </div>
-          <div class="static-toggle" id="static-toggle">Добавить статические номера</div>
-          <div class="static-box is-hidden" id="static-box">
-            <div class="static-grid">
-              <div>Москва (495)</div><input id="sn-495" class="input" type="number" min="0" step="1" value="0">
-              <div>Москва (499)</div><input id="sn-499" class="input" type="number" min="0" step="1" value="0">
-              <div>С.-Петербург</div><input id="sn-spb" class="input" type="number" min="0" step="1" value="0">
-              <div>Региональные</div><input id="sn-reg" class="input" type="number" min="0" step="1" value="0">
+          <div class="field">
+            <label class="label">Количество посетителей / трафик</label>
+            <div class="input-with-icon">
+              <span class="icon">👥</span>
+              <input id="traffic" class="input" type="number" min="0" step="100" value="6000" placeholder="Например, 6000">
+            </div>
+            <p class="hint">Это же значение используем для Email-Tracking.</p>
+          </div>
+          <div class="field static-field">
+            <div class="static-head">
+              <span class="label">Доп. статические номера</span>
+              <span class="static-summary" id="static-summary">0 шт</span>
+            </div>
+            <div class="static-toggle" id="static-toggle">Добавить статические номера</div>
+            <div class="static-box is-hidden" id="static-box">
+              <div class="static-grid">
+                <div>Москва (495)</div><input id="sn-495" class="input" type="number" min="0" step="1" value="0">
+                <div>Москва (499)</div><input id="sn-499" class="input" type="number" min="0" step="1" value="0">
+                <div>С.-Петербург</div><input id="sn-spb" class="input" type="number" min="0" step="1" value="0">
+                <div>Региональные</div><input id="sn-reg" class="input" type="number" min="0" step="1" value="0">
+              </div>
             </div>
           </div>
         </div>
