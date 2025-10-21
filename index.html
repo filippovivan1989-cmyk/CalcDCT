@@ -20,6 +20,7 @@
     <section class="grid-top">
       <div class="card" id="card-params">
         <h2 class="card-title">Параметры</h2>
+        <!--
         <div class="field">
           <label class="label">Тариф</label>
           <div class="tariff-group" id="tariff-group" role="tablist" aria-label="Тарифы">
@@ -29,40 +30,82 @@
           </div>
           <p class="hint">Выберите тариф. Активный выделен цветом.</p>
         </div>
-        <div class="field">
-          <label class="label">Количество виджетов</label>
-          <select id="widgets" class="select"></select>
-          <p class="hint" id="widgets-hint"></p>
-        </div>
-        <div class="field">
-          <label class="label">Время закрепления</label>
-          <select id="retention" class="select"></select>
-        </div>
-        <div class="field">
-          <label class="label">Количество посетителей / трафик</label>
-          <div class="input-with-icon">
-            <span class="icon">👥</span>
-            <input id="traffic" class="input" type="number" min="0" step="100" value="6000" placeholder="Например, 6000">
-          </div>
-          <p class="hint">Это же значение используем для Email-Tracking.</p>
-        </div>
-        <div class="field static-field">
-          <div class="static-head">
-            <span class="label">Доп. статические номера</span>
-            <span class="static-summary" id="static-summary">0 шт</span>
-          </div>
-          <div class="static-toggle" id="static-toggle">Добавить статические номера</div>
-          <div class="static-box is-hidden" id="static-box">
-            <div class="static-grid">
-              <div>Москва (495)</div><input id="sn-495" class="input" type="number" min="0" step="1" value="0">
-              <div>Москва (499)</div><input id="sn-499" class="input" type="number" min="0" step="1" value="0">
-              <div>С.-Петербург</div><input id="sn-spb" class="input" type="number" min="0" step="1" value="0">
-              <div>Региональные</div><input id="sn-reg" class="input" type="number" min="0" step="1" value="0">
+        -->
+        <div class="params-grid">
+          <div class="params-primary">
+            <div class="field">
+              <label class="label">Количество посетителей / трафик</label>
+              <div class="input-with-icon">
+                <span class="icon">👥</span>
+                <input id="traffic" class="input" type="number" min="0" step="100" value="6000" placeholder="Например, 6000">
+              </div>
+              <p class="hint">Это же значение используем для Email-Tracking.</p>
             </div>
+            <div class="field">
+              <label class="label">Время закрепления</label>
+              <select id="retention" class="select"></select>
+            </div>
+            <div class="field">
+              <label class="label">Количество виджетов</label>
+              <select id="widgets" class="select"></select>
+              <p class="hint" id="widgets-hint"></p>
+            </div>
+          </div>
+
+          <div class="field static-field vat-static-field">
+            <div class="static-head">
+              <span class="label">Настройки ВАТС</span>
+              <span class="static-summary" id="vat-summary">Не выбрана</span>
+            </div>
+            <div class="static-toggle" id="vat-toggle" role="button" tabindex="0" aria-controls="vat-box" aria-expanded="false">Настроить ВАТС</div>
+            <div class="static-box is-hidden" id="vat-box">
+              <div class="vat-field">
+                <label class="label" for="vats">Версия ВАТС</label>
+                <div class="vat-line">
+                  <select id="vats" class="select"></select>
+                  <label class="checkbox">
+                    <input type="checkbox" id="vats-new">
+                    <span>Новый клиент</span>
+                  </label>
+                </div>
+                <p class="hint" id="vats-hint"></p>
+              </div>
+              <div class="checkbox-field">
+                <label class="checkbox">
+                  <input type="checkbox" id="vats-api">
+                  <span>Интеграция с CRM</span>
+                </label>
+                <p class="hint" id="vats-api-hint"></p>
+              </div>
+              <div class="checkbox-field">
+                <label class="checkbox">
+                  <input type="checkbox" id="crm-sa">
+                  <span>Интеграция CRM-СА</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="field static-field">
+            <div class="static-head">
+              <span class="label">Доп. статические номера</span>
+              <span class="static-summary" id="static-summary">0 шт</span>
+            </div>
+            <div class="static-toggle" id="static-toggle" role="button" tabindex="0" aria-controls="static-box" aria-expanded="false">Добавить статические номера</div>
+            <div class="static-box is-hidden" id="static-box">
+              <div class="static-grid">
+                <div>Москва (495)</div><input id="sn-495" class="input" type="number" min="0" step="1" value="0">
+                <div>Москва (499)</div><input id="sn-499" class="input" type="number" min="0" step="1" value="0">
+                <div>С.-Петербург</div><input id="sn-spb" class="input" type="number" min="0" step="1" value="0">
+                <div>Региональные</div><input id="sn-reg" class="input" type="number" min="0" step="1" value="0">
+              </div>
+            </div>
+            <p class="hint warning is-hidden" id="static-warning"></p>
           </div>
         </div>
       </div>
 
+      <!--
       <div class="card" id="card-total">
         <h2 class="card-title">Расчёт</h2>
         <div class="totals">
@@ -82,19 +125,22 @@
           <ul id="email-list" class="email-list"></ul>
         </div>
       </div>
+      -->
+    </section>
+
+    <section class="card fullwidth" id="card-addons">
+      <h2 class="card-title">
+        <button class="collapse-button" type="button" id="addons-toggle" aria-expanded="false" aria-controls="addons">
+          <span>Дополнительные услуги</span>
+          <span class="collapse-arrow" aria-hidden="true"></span>
+        </button>
+      </h2>
+      <div id="addons" class="addons-grid" hidden></div>
     </section>
 
     <section class="card fullwidth">
-      <h2 class="card-title">Дополнительные услуги</h2>
-      <div id="addons" class="addons-grid"></div>
-    </section>
-
-    <section class="card fullwidth">
-      <div class="compare-header">
-        <h2 class="card-title">Сравнение тарифов</h2>
-        <label class="toggle"><input type="checkbox" id="toggle-compare" checked> Показать сравнение</label>
-      </div>
-
+      <h2 class="card-title">Сравнение тарифов</h2>
+      <p class="compare-disclaimer" id="compare-disclaimer" hidden></p>
       <div class="compare-grid" id="compare-grid">
         <div class="t-card" data-tariff="Лайм">
           <div class="t-title">Лайм</div>
@@ -102,6 +148,9 @@
           <div class="t-line"><span>Трафик</span><span id="c-Лайм-traffic">—</span></div>
           <div class="t-line"><span>Виджеты</span><span id="c-Лайм-widgets">—</span></div>
           <div class="t-badge is-hidden">Недоступно</div>
+          <div class="t-note is-hidden" id="c-Лайм-note"></div>
+          <button class="t-details-toggle" type="button" data-target="c-Лайм-details" aria-controls="c-Лайм-details" aria-expanded="false">Показать расчёт</button>
+          <div class="t-details" id="c-Лайм-details" hidden></div>
         </div>
         <div class="t-card" data-tariff="Манго">
           <div class="t-title">Манго</div>
@@ -109,6 +158,9 @@
           <div class="t-line"><span>Трафик</span><span id="c-Манго-traffic">—</span></div>
           <div class="t-line"><span>Виджеты</span><span id="c-Манго-widgets">—</span></div>
           <div class="t-badge is-hidden">Недоступно</div>
+          <div class="t-note is-hidden" id="c-Манго-note"></div>
+          <button class="t-details-toggle" type="button" data-target="c-Манго-details" aria-controls="c-Манго-details" aria-expanded="false">Показать расчёт</button>
+          <div class="t-details" id="c-Манго-details" hidden></div>
         </div>
         <div class="t-card" data-tariff="Папайя">
           <div class="t-title">Папайя</div>
@@ -116,6 +168,9 @@
           <div class="t-line"><span>Трафик</span><span id="c-Папайя-traffic">—</span></div>
           <div class="t-line"><span>Виджеты</span><span id="c-Папайя-widgets">—</span></div>
           <div class="t-badge is-hidden">Недоступно</div>
+          <div class="t-note is-hidden" id="c-Папайя-note"></div>
+          <button class="t-details-toggle" type="button" data-target="c-Папайя-details" aria-controls="c-Папайя-details" aria-expanded="false">Показать расчёт</button>
+          <div class="t-details" id="c-Папайя-details" hidden></div>
         </div>
       </div>
       <p class="hint">Если выбранные услуги/виджеты недоступны на тарифе — карточка тарифа скрывается.</p>
