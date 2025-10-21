@@ -38,19 +38,25 @@ function widgetsMaxForTariff(tariff){
   return Math.max(1, rules.max);
 }
 
+function widgetsMaxAcrossTariffs(){
+  return PRICE.tariffs.reduce((acc, t)=> Math.max(acc, widgetsMaxForTariff(t.name)), 1);
+}
+
 function buildWidgetsOptions(){
   const sel = q('widgets'); sel.innerHTML="";
-  const rules = PRICE.widgets_rules[state.tariff] || {max:3, free:1};
-  const max = widgetsMaxForTariff(state.tariff);
+  const max = widgetsMaxAcrossTariffs();
   for(let i=1;i<=max;i++){
     const o=document.createElement('option'); o.value=String(i);
-    o.textContent = i + (i<= (rules.free||0) ? " (бесплатно)" : "");
+    o.textContent = String(i);
     sel.appendChild(o);
   }
-  q('widgets-hint').textContent =
-    (state.tariff==="Папайя" ? "На Папайя: без ограничений, 10 бесплатно."
-     : state.tariff==="Манго" ? "На Манго: максимум 10, 1 бесплатно."
-     : "На Лайм: максимум 3, 1 бесплатно.");
+  const widgetsHint = PRICE.tariffs.map(t=>{
+    const rules = PRICE.widgets_rules[t.name] || {};
+    const free = Math.max(0, rules.free||0);
+    if (rules.max == null) return `${t.name}: без ограничений, ${free} бесплатно.`;
+    return `${t.name}: максимум ${rules.max}, ${free} бесплатно.`;
+  }).join(' ');
+  q('widgets-hint').textContent = widgetsHint;
   sel.value = String(Math.min(state.widgets, max));
 }
 
@@ -60,10 +66,10 @@ function perTariffPrice(srv, tariff){
   return srv.price_pap;
 }
 
-function currentSelections(){
+function selectionsForTariff(tariff){
   const selections = {};
   for (const srv of PRICE.services){
-    const p = perTariffPrice(srv, state.tariff);
+    const p = perTariffPrice(srv, tariff);
     const available = (p !== null && p !== undefined);
     const included = available && p === 0;
     if (included) selections[srv.name] = true;
@@ -71,6 +77,10 @@ function currentSelections(){
     else selections[srv.name] = !!state.user_choices[srv.name];
   }
   return selections;
+}
+
+function currentSelections(){
+  return selectionsForTariff(state.tariff);
 }
 
 function buildAddons(){
@@ -239,14 +249,7 @@ function renderCompare(){
     el.querySelector('.t-badge').classList.toggle('is-hidden', ok);
     if (!ok) return;
 
-    const selections_t = {};
-    for (const srv of PRICE.services){
-      const p = (/лайм/i.test(t) ? srv.price_lm : /манго/i.test(t) ? srv.price_mg : srv.price_pap);
-      if (p===0) selections_t[srv.name] = true;
-      else if (p==null) selections_t[srv.name] = false;
-      else selections_t[srv.name] = !!state.user_choices[srv.name];
-    }
-
+    const selections_t = selectionsForTariff(t);
     const inputs = {
       tariff: t,
       retention: state.retention,
