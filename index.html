@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Калькулятор стоимости Коллтрекинга и Маркетинговой аналитики</title>
+  <title>Калькулятор ДКТ</title>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./styles.css">
@@ -11,8 +11,8 @@
 <body>
   <header class="page-header">
     <div class="container">
-      <h1>Калькулятор стоимости Коллтрекинга и Маркетинговой аналитики</h1>
-      <p class="sub">Быстрый расчёт стоимости подключения и использования сервисов.</p>
+      <h1>Калькулятор стоимости Martech решения Mango Office (Коллтрекинг и аналитика)</h1>
+      <p class="sub">Быстрый расчёт размеров абонентской платы по выбранным параметрам проекта.</p>
     </div>
   </header>
 
@@ -42,7 +42,7 @@
               <p class="hint">Это же значение используем для Email-Tracking.</p>
             </div>
             <div class="field">
-              <label class="label">Время закрепления</label>
+              <label class="label">Время закрепления номера</label>
               <select id="retention" class="select"></select>
             </div>
             <div class="field">
@@ -54,10 +54,10 @@
 
           <div class="field static-field vat-static-field">
             <div class="static-head">
-              <span class="label">Настройки ВАТС</span>
+              <span class="label">Параметры клиентской ВАТС</span>
               <span class="static-summary" id="vat-summary">Не выбрана</span>
             </div>
-            <div class="static-toggle" id="vat-toggle" role="button" tabindex="0" aria-controls="vat-box" aria-expanded="false">Настроить ВАТС</div>
+            <div class="static-toggle" id="vat-toggle" role="button" tabindex="0" aria-controls="vat-box" aria-expanded="false">Ввести данные ВАТС</div>
             <div class="static-box is-hidden" id="vat-box">
               <div class="vat-field">
                 <label class="label" for="vats">Версия ВАТС</label>
@@ -73,14 +73,14 @@
               <div class="checkbox-field">
                 <label class="checkbox">
                   <input type="checkbox" id="vats-api">
-                  <span>Интеграция с CRM</span>
+                  <span>Интеграция ВАТС с CRM (создание сделок и обогащение их маркетинговыми данными)</span>
                 </label>
                 <p class="hint" id="vats-api-hint"></p>
               </div>
               <div class="checkbox-field">
                 <label class="checkbox">
                   <input type="checkbox" id="crm-sa">
-                  <span>Интеграция CRM-СА</span>
+                  <span>Интеграция CRM-СА (импорт сделок в Сквозную аналитику) </span>
                 </label>
               </div>
             </div>
@@ -88,7 +88,7 @@
 
           <div class="field static-field">
             <div class="static-head">
-              <span class="label">Доп. статические номера</span>
+              <span class="label">Доп. статические номера для использования в КТ (номера используемые в статических и offline каналах)</span>
               <span class="static-summary" id="static-summary">0 шт</span>
             </div>
             <div class="static-toggle" id="static-toggle" role="button" tabindex="0" aria-controls="static-box" aria-expanded="false">Добавить статические номера</div>
@@ -149,7 +149,7 @@
           <div class="t-line"><span>Виджеты</span><span id="c-Лайм-widgets">—</span></div>
           <div class="t-badge is-hidden">Недоступно</div>
           <div class="t-note is-hidden" id="c-Лайм-note"></div>
-          <button class="t-details-toggle" type="button" data-target="c-Лайм-details" aria-controls="c-Лайм-details" aria-expanded="false">Показать расчёт</button>
+          <button class="t-details-toggle" type="button" data-target="c-Лайм-details" aria-controls="c-Лайм-details" aria-expanded="false">Показать подробный расчёт</button>
           <div class="t-details" id="c-Лайм-details" hidden></div>
         </div>
         <div class="t-card" data-tariff="Манго">
@@ -159,7 +159,7 @@
           <div class="t-line"><span>Виджеты</span><span id="c-Манго-widgets">—</span></div>
           <div class="t-badge is-hidden">Недоступно</div>
           <div class="t-note is-hidden" id="c-Манго-note"></div>
-          <button class="t-details-toggle" type="button" data-target="c-Манго-details" aria-controls="c-Манго-details" aria-expanded="false">Показать расчёт</button>
+          <button class="t-details-toggle" type="button" data-target="c-Манго-details" aria-controls="c-Манго-details" aria-expanded="false">Показать подробный расчёт</button>
           <div class="t-details" id="c-Манго-details" hidden></div>
         </div>
         <div class="t-card" data-tariff="Папайя">
@@ -169,7 +169,7 @@
           <div class="t-line"><span>Виджеты</span><span id="c-Папайя-widgets">—</span></div>
           <div class="t-badge is-hidden">Недоступно</div>
           <div class="t-note is-hidden" id="c-Папайя-note"></div>
-          <button class="t-details-toggle" type="button" data-target="c-Папайя-details" aria-controls="c-Папайя-details" aria-expanded="false">Показать расчёт</button>
+          <button class="t-details-toggle" type="button" data-target="c-Папайя-details" aria-controls="c-Папайя-details" aria-expanded="false">Показать подробный расчёт</button>
           <div class="t-details" id="c-Папайя-details" hidden></div>
         </div>
       </div>
@@ -179,7 +179,8 @@
 
   <footer class="page-footer">
     <div class="container">
-      <span class="muted">© Mango — калькулятор v3.5</span>
+      <span class="muted">© Mango — калькулятор v 4</span>
+      <span class="muted">Контакты для обратной связи - i.filippov@mangotele.com</span>
     </div>
   </footer>
 
