@@ -25,7 +25,8 @@ let state = {
   vatsVersion: '',
   vatsApi: false,
   vatsNewClient: false,
-  crmSaIntegration: false
+  crmSaIntegration: false,
+  ownNumbersTracking: false
 };
 
 const detailOpenState = {};
@@ -119,6 +120,50 @@ function updateStaticWarning(){
     warn.classList.remove('is-hidden');
     warn.classList.add('warning');
   }
+}
+
+function retentionLabelToMinutes(label){
+  if (!label) return null;
+  const match = /([0-9]+)/.exec(label);
+  return match ? parseInt(match[1], 10) : null;
+}
+
+function calculateNumbers(sessions_per_day, hold_time_minutes) {
+  const C = 0.02;
+  const kMap = {5: 0.6, 15: 1.0, 30: 1.5, 60: 2.3, 120: 3.4};
+
+  const k = kMap[hold_time_minutes];
+  let N = Math.ceil(sessions_per_day * C * k);
+
+  if (N < 2) N = 2;
+  return N;
+}
+
+function updateOwnNumbersHint(){
+  const checkbox = q('own-numbers');
+  const hint = q('own-numbers-hint');
+  if (!checkbox || !hint) return;
+  checkbox.checked = !!state.ownNumbersTracking;
+  if (!state.ownNumbersTracking){
+    hint.classList.add('is-hidden');
+    return;
+  }
+
+  const holdMinutes = retentionLabelToMinutes(state.retention);
+  if (!holdMinutes){
+    hint.textContent = 'Выберите время закрепления номера, чтобы рассчитать количество номеров.';
+    hint.classList.remove('is-hidden');
+    return;
+  }
+
+  const sessionsPerDay = Math.max(0, state.traffic || 0) / 30;
+  const numbers = calculateNumbers(sessionsPerDay, holdMinutes);
+  if (!Number.isFinite(numbers)){
+    hint.textContent = 'Не удалось рассчитать количество номеров для выбранных параметров.';
+  } else {
+    hint.textContent = `Рекомендуемое количество номеров: ${numbers} шт.`;
+  }
+  hint.classList.remove('is-hidden');
 }
 
 function updateVatHints(){
@@ -356,6 +401,14 @@ function bindBasics(){
     });
   }
 
+  const ownNumbers = q('own-numbers');
+  if (ownNumbers){
+    ownNumbers.addEventListener('change', ()=>{
+      state.ownNumbersTracking = ownNumbers.checked;
+      updateOwnNumbersHint();
+    });
+  }
+
   const addonsToggle = q('addons-toggle');
   if (addonsToggle){
     addonsToggle.addEventListener('click', ()=>{
@@ -506,6 +559,7 @@ function renderTotals(){
       box.classList.add('is-hidden');
     }
   }
+  updateOwnNumbersHint();
   updateVatHints();
 }
 
