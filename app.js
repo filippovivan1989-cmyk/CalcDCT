@@ -6,7 +6,8 @@ const OWN_NUMBERS_COEFFICIENT = 0.02;
 const OWN_NUMBERS_K_MAP = Object.freeze({5: 0.6, 15: 1.0, 30: 1.5, 60: 2.3, 120: 3.4});
 const DEFAULT_PRICE_VERSION = 'current';
 const PRICE_VERSION_STORAGE_KEY = 'calc-price-version';
-const NEW_PRICE_DATE = '01.09.2024';
+const NEW_PRICE_DATE = '08.12.2025';
+
 
 function loadSavedPriceVersion(){
   try {
