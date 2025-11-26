@@ -4,6 +4,25 @@ import { loadAll, calcTotal } from './engine.js';
 const money = n => new Intl.NumberFormat('ru-RU', {maximumFractionDigits:0}).format(Math.round(n)) + " ₽";
 const OWN_NUMBERS_COEFFICIENT = 0.02;
 const OWN_NUMBERS_K_MAP = Object.freeze({5: 0.6, 15: 1.0, 30: 1.5, 60: 2.3, 120: 3.4});
+const DEFAULT_PRICE_VERSION = 'current';
+const PRICE_VERSION_STORAGE_KEY = 'calc-price-version';
+const NEW_PRICE_DATE = '01.09.2024';
+
+function loadSavedPriceVersion(){
+  try {
+    return localStorage.getItem(PRICE_VERSION_STORAGE_KEY) || DEFAULT_PRICE_VERSION;
+  } catch (err) {
+    return DEFAULT_PRICE_VERSION;
+  }
+}
+
+function persistPriceVersion(value){
+  try {
+    localStorage.setItem(PRICE_VERSION_STORAGE_KEY, value);
+  } catch (err) {
+    // ignore
+  }
+}
 
 function formatNumber(value, fractionDigits = 0) {
   const opts = { maximumFractionDigits: fractionDigits, minimumFractionDigits: fractionDigits };
@@ -45,7 +64,8 @@ let state = {
   vatsApi: false,
   vatsNewClient: false,
   crmSaIntegration: false,
-  ownNumbersTracking: false
+  ownNumbersTracking: false,
+  priceVersion: loadSavedPriceVersion()
 };
 
 const detailOpenState = {};
@@ -92,6 +112,13 @@ function setAddonsOpen(open){
   if (toggle){
     toggle.setAttribute('aria-expanded', addonsExpanded ? 'true' : 'false');
   }
+}
+
+function applyPriceVersionToUI(){
+  const newLabel = document.querySelector('[data-price-label="new"]');
+  if (newLabel) newLabel.textContent = `Новые цены (с ${NEW_PRICE_DATE})`;
+  const radios = document.querySelectorAll('input[name="price-version"]');
+  radios.forEach(r => { r.checked = r.value === state.priceVersion; });
 }
 
 function vatOptionByValue(value){
@@ -263,11 +290,17 @@ function updateVatHints(){
 
 function buildRetentions(){
   const sel = q('retention'); sel.innerHTML="";
-  PRICE.retentions.forEach(r=>{
+  let hasSelected = false;
+  PRICE.retentions.forEach((r, idx)=>{
     const o=document.createElement('option'); o.value=r.label; o.textContent=r.label;
-    if (r.label==="30 минут") o.selected = true;
+    if (r.label===state.retention) { o.selected = true; hasSelected = true; }
+    if (!state.retention && idx === 0) { state.retention = r.label; o.selected = true; hasSelected = true; }
     sel.appendChild(o);
   });
+  if (!hasSelected && PRICE.retentions.length){
+    state.retention = PRICE.retentions[0].label;
+    sel.value = state.retention;
+  }
 }
 
 function widgetsMaxForTariff(tariff){
@@ -295,7 +328,9 @@ function buildWidgetsOptions(){
     return `${t.name}: максимум ${rules.max}, ${free} бесплатно.`;
   }).join(' ');
   q('widgets-hint').textContent = widgetsHint;
-  sel.value = String(Math.min(state.widgets, max));
+  const capped = Math.max(1, Math.min(state.widgets, max));
+  state.widgets = capped;
+  sel.value = String(capped);
 }
 
 function perTariffPrice(srv, tariff){
@@ -371,7 +406,37 @@ function buildAddons(){
   setAddonsOpen(addonsExpanded);
 }
 
+async function reloadPrice(){
+  const all = await loadAll(state.priceVersion);
+  PRICE = all.PRICE;
+  buildRetentions();
+  buildWidgetsOptions();
+  buildAddons();
+  setAddonsOpen(false);
+  buildVatOptions();
+  updateVatHints();
+  applyPriceVersionToUI();
+  renderTotals();
+  renderCompare();
+}
+
+async function setPriceVersion(version){
+  if (!version || state.priceVersion === version) return;
+  state.priceVersion = version;
+  persistPriceVersion(version);
+  await reloadPrice();
+}
+
 function bindBasics(){
+  const priceRadios = document.querySelectorAll('input[name="price-version"]');
+  priceRadios.forEach(radio => {
+    radio.checked = radio.value === state.priceVersion;
+    radio.addEventListener('change', ()=>{
+      if (!radio.checked) return;
+      setPriceVersion(radio.value).catch(err => console.error(err));
+    });
+  });
+
   document.querySelectorAll('.tariff-btn').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       document.querySelectorAll('.tariff-btn').forEach(b=>b.classList.remove('is-active'));
@@ -711,16 +776,10 @@ function renderCompare(){
 }
 
 async function main(){
-  const all = await loadAll(); PRICE = all.PRICE;
-  buildRetentions();
-  buildWidgetsOptions();
-  buildAddons();
-  setAddonsOpen(false);
-  buildVatOptions();
-  updateVatHints();
+  applyPriceVersionToUI();
+  persistPriceVersion(state.priceVersion);
+  await reloadPrice();
   bindBasics();
-  renderTotals();
-  renderCompare();
 }
 
 main();
