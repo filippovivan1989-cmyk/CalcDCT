@@ -8,6 +8,7 @@ const DEFAULT_PRICE_VERSION = 'current';
 const PRICE_VERSION_STORAGE_KEY = 'calc-price-version';
 const NEW_PRICE_DATE = '08.12.2025';
 
+
 function loadSavedPriceVersion(){
   try {
     return localStorage.getItem(PRICE_VERSION_STORAGE_KEY) || DEFAULT_PRICE_VERSION;

@@ -4,12 +4,12 @@
     {
       "name": "Лайм",
       "mgp_rub": 1000,
-      "monthly_flat": 3400
+      "monthly_flat": 4200
     },
     {
       "name": "Манго",
       "mgp_rub": 3000,
-      "monthly_flat": 3700
+      "monthly_flat": 5100
     },
     {
       "name": "Папайя",
@@ -20,28 +20,29 @@
   "retentions": [
     {
       "label": "5 минут",
-      "coef": 0.12
+
+      "coef": 0.17
     },
     {
       "label": "15 минут",
-      "coef": 0.18
+      "coef": 0.25
     },
     {
       "label": "30 минут",
-      "coef": 0.3
+      "coef": 0.39
     },
     {
       "label": "60 минут",
-      "coef": 0.6
+      "coef": 0.78
     },
     {
       "label": "120 минут",
-      "coef": 1.2
+      "coef": 1.35
     }
   ],
   "overage_markup": {
-    "lime": 0.3,
-    "mango": 0.2,
+    "lime": 0.4,
+    "mango": 0.3,
     "papaya": 0.0
   },
   "widgets_rules": {
@@ -147,15 +148,15 @@
     },
     {
       "name": "Антиспам на продукте",
-      "price_lm": 400,
-      "price_mg": 400,
+      "price_lm": 600,
+      "price_mg": 600,
       "price_pap": 0
     },
     {
       "name": "Анализ конкурентов",
-      "price_lm": 3500,
-      "price_mg": 3500,
-      "price_pap": 3500
+      "price_lm": 3950,
+      "price_mg": 3950,
+      "price_pap": 3950
     },
     {
       "name": "Emailtracking",
