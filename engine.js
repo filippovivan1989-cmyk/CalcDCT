@@ -1,6 +1,7 @@
 
-export async function loadAll() {
-  const price = await fetch('./price.json', {cache:'no-store'}).then(r=>r.json());
+export async function loadAll(priceVersion = 'current') {
+  const fileName = priceVersion === 'new' ? './price_new.json' : './price.json';
+  const price = await fetch(fileName, {cache:'no-store'}).then(r=>r.json());
   return { PRICE: price };
 }
 function tInfo(PRICE, name){ return PRICE.tariffs.find(t=>t.name===name); }
