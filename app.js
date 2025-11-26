@@ -185,28 +185,7 @@ function updateOwnNumbersHint(){
   if (!Number.isFinite(numbers) || numbers == null){
     hint.textContent = 'Не удалось рассчитать количество номеров для выбранных параметров.';
   } else {
-    const monthlySessions = Math.max(0, state.traffic || 0);
-    const coefficientText = formatNumber(OWN_NUMBERS_COEFFICIENT, 2);
-    const kText = formatNumber(k, 1);
-    const dailySessionsText = Number.isInteger(sessionsPerDay)
-      ? formatNumber(sessionsPerDay)
-      : formatNumber(sessionsPerDay, 1);
-    const monthlySessionsText = formatNumber(monthlySessions);
-    const rawResult = sessionsPerDay * OWN_NUMBERS_COEFFICIENT * k;
-    const rawText = Number.isInteger(rawResult)
-      ? formatNumber(rawResult)
-      : formatNumber(rawResult, 2);
-    const roundedWithoutMinimum = Math.ceil(rawResult);
-    const roundingNote = numbers === roundedWithoutMinimum
-      ? `Округляем вверх до ${numbers} ${pluralizeNumbers(numbers)}.`
-      : 'Результат меньше 2, поэтому берём минимальное значение — 2 номера.';
-
-    const lines = [
-      `<strong>Рекомендуемое количество номеров: ${numbers} ${pluralizeNumbers(numbers)}.</strong>`,
-      `Формула: (сессии в месяц ÷ 30) × ${coefficientText} × k.`,
-      `При ${monthlySessionsText} сессий/мес и времени ${holdMinutes} мин (k = ${kText}): ${monthlySessionsText} ÷ 30 = ${dailySessionsText} сессий/день, ${dailySessionsText} × ${coefficientText} × ${kText} = ${rawText}. ${roundingNote}`
-    ];
-    hint.innerHTML = lines.join('<br>');
+    hint.textContent = `Рекомендуем использовать не менее ${numbers} номеров.`;
   }
   hint.classList.remove('is-hidden');
 }
