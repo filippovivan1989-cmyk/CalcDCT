@@ -2,6 +2,25 @@
 import { loadAll, calcTotal } from './engine.js';
 
 const money = n => new Intl.NumberFormat('ru-RU', {maximumFractionDigits:0}).format(Math.round(n)) + " ₽";
+const OWN_NUMBERS_COEFFICIENT = 0.02;
+const OWN_NUMBERS_K_MAP = Object.freeze({5: 0.6, 15: 1.0, 30: 1.5, 60: 2.3, 120: 3.4});
+
+function formatNumber(value, fractionDigits = 0) {
+  const opts = { maximumFractionDigits: fractionDigits, minimumFractionDigits: fractionDigits };
+  if (fractionDigits === 0) {
+    opts.maximumFractionDigits = 0;
+    opts.minimumFractionDigits = 0;
+  }
+  return new Intl.NumberFormat('ru-RU', opts).format(value);
+}
+
+function pluralizeNumbers(n){
+  const mod10 = n % 10;
+  const mod100 = n % 100;
+  if (mod10 === 1 && mod100 !== 11) return 'номер';
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return 'номера';
+  return 'номеров';
+}
 
 const VAT_OPTIONS = [
   { value: '', label: '— Не выбрано —', monthly: 0, sipIncluded: null, sipFee: null, maxNumbers: Infinity, apiCost: 0 },
@@ -25,7 +44,8 @@ let state = {
   vatsVersion: '',
   vatsApi: false,
   vatsNewClient: false,
-  crmSaIntegration: false
+  crmSaIntegration: false,
+  ownNumbersTracking: false
 };
 
 const detailOpenState = {};
@@ -119,6 +139,76 @@ function updateStaticWarning(){
     warn.classList.remove('is-hidden');
     warn.classList.add('warning');
   }
+}
+
+function retentionLabelToMinutes(label){
+  if (!label) return null;
+  const match = /([0-9]+)/.exec(label);
+  return match ? parseInt(match[1], 10) : null;
+}
+
+function calculateNumbers(sessions_per_day, hold_time_minutes) {
+  const k = OWN_NUMBERS_K_MAP[hold_time_minutes];
+  if (!k) return null;
+
+  let N = Math.ceil(sessions_per_day * OWN_NUMBERS_COEFFICIENT * k);
+  if (N < 2) N = 2;
+  return N;
+}
+
+function updateOwnNumbersHint(){
+  const checkbox = q('own-numbers');
+  const hint = q('own-numbers-hint');
+  if (!checkbox || !hint) return;
+  checkbox.checked = !!state.ownNumbersTracking;
+  if (!state.ownNumbersTracking){
+    hint.classList.add('is-hidden');
+    return;
+  }
+
+  const holdMinutes = retentionLabelToMinutes(state.retention);
+  if (!holdMinutes){
+    hint.textContent = 'Выберите время закрепления номера, чтобы рассчитать количество номеров.';
+    hint.classList.remove('is-hidden');
+    return;
+  }
+
+  const sessionsPerDay = Math.max(0, state.traffic || 0) / 30;
+  const k = OWN_NUMBERS_K_MAP[holdMinutes];
+  if (!k){
+    hint.textContent = 'Для выбранного времени закрепления нет коэффициента расчёта.';
+    hint.classList.remove('is-hidden');
+    return;
+  }
+
+  const numbers = calculateNumbers(sessionsPerDay, holdMinutes);
+  if (!Number.isFinite(numbers) || numbers == null){
+    hint.textContent = 'Не удалось рассчитать количество номеров для выбранных параметров.';
+  } else {
+    const monthlySessions = Math.max(0, state.traffic || 0);
+    const coefficientText = formatNumber(OWN_NUMBERS_COEFFICIENT, 2);
+    const kText = formatNumber(k, 1);
+    const dailySessionsText = Number.isInteger(sessionsPerDay)
+      ? formatNumber(sessionsPerDay)
+      : formatNumber(sessionsPerDay, 1);
+    const monthlySessionsText = formatNumber(monthlySessions);
+    const rawResult = sessionsPerDay * OWN_NUMBERS_COEFFICIENT * k;
+    const rawText = Number.isInteger(rawResult)
+      ? formatNumber(rawResult)
+      : formatNumber(rawResult, 2);
+    const roundedWithoutMinimum = Math.ceil(rawResult);
+    const roundingNote = numbers === roundedWithoutMinimum
+      ? `Округляем вверх до ${numbers} ${pluralizeNumbers(numbers)}.`
+      : 'Результат меньше 2, поэтому берём минимальное значение — 2 номера.';
+
+    const lines = [
+      `<strong>Рекомендуемое количество номеров: ${numbers} ${pluralizeNumbers(numbers)}.</strong>`,
+      `Формула: (сессии в месяц ÷ 30) × ${coefficientText} × k.`,
+      `При ${monthlySessionsText} сессий/мес и времени ${holdMinutes} мин (k = ${kText}): ${monthlySessionsText} ÷ 30 = ${dailySessionsText} сессий/день, ${dailySessionsText} × ${coefficientText} × ${kText} = ${rawText}. ${roundingNote}`
+    ];
+    hint.innerHTML = lines.join('<br>');
+  }
+  hint.classList.remove('is-hidden');
 }
 
 function updateVatHints(){
@@ -356,6 +446,14 @@ function bindBasics(){
     });
   }
 
+  const ownNumbers = q('own-numbers');
+  if (ownNumbers){
+    ownNumbers.addEventListener('change', ()=>{
+      state.ownNumbersTracking = ownNumbers.checked;
+      updateOwnNumbersHint();
+    });
+  }
+
   const addonsToggle = q('addons-toggle');
   if (addonsToggle){
     addonsToggle.addEventListener('click', ()=>{
@@ -513,6 +611,7 @@ function renderTotals(){
       box.classList.add('is-hidden');
     }
   }
+  updateOwnNumbersHint();
   updateVatHints();
 }
 
