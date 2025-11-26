@@ -372,7 +372,14 @@ function bindBasics(){
       if (!card) return;
       const tariffName = card.dataset.tariff;
       if (!tariffName) return;
-      detailOpenState[tariffName] = !detailOpenState[tariffName];
+      const nextState = !detailOpenState[tariffName];
+      if (PRICE && Array.isArray(PRICE.tariffs)){
+        PRICE.tariffs.forEach(tariff => {
+          detailOpenState[tariff.name] = nextState;
+        });
+      } else {
+        detailOpenState[tariffName] = nextState;
+      }
       renderCompare();
     });
   });
