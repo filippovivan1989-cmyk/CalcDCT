@@ -56,9 +56,10 @@ export function calcTrafficCost(PRICE, {tariff, retention, traffic}){
   const rawTrafficRub = (traffic||0) * (pricePerSession||0);
   const extraRub = Math.max(0, rawTrafficRub - packageRub);
   const markup = overageMarkup(PRICE, tariff);
-  const extraWithMarkup = extraRub * (1 + markup);
-  const totalTrafficRub = packageRub + extraWithMarkup;
-  return { pricePerSession, packageRub, rawTrafficRub, extraRub, markup, extraWithMarkup, totalTrafficRub };
+  const extraMarkup = extraRub * markup;
+  const extraWithMarkup = extraRub + extraMarkup;
+  const totalTrafficRub = packageRub + extraRub + extraMarkup;
+  return { pricePerSession, packageRub, rawTrafficRub, extraRub, markup, extraMarkup, extraWithMarkup, totalTrafficRub };
 }
 export function calcEmailOverage(PRICE, tariffName, emailTraffic){
   const pkgMap = PRICE.email_tracking?.included_by_tariff || {};

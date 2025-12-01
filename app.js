@@ -597,7 +597,9 @@ function breakdownForTotals(totals){
     parts.push({ label: 'Интеграция с CRM', amount: totals.vatCharges.api });
   }
   parts.push({ label: 'Трафик (пакет)', amount: totals.traffic.packageRub });
-  parts.push({ label: 'Трафик сверх пакета', amount: totals.traffic.extraWithMarkup });
+  parts.push({ label: 'Трафик сверх пакета', amount: totals.traffic.extraRub });
+  const markupLabel = `Повышающий коэф. (${formatNumber(totals.traffic.markup * 100, 0)}%)`;
+  parts.push({ label: markupLabel, amount: totals.traffic.extraMarkup });
   if (totals.widgets.widgetCost > 0){
     parts.push({ label: 'Виджеты', amount: totals.widgets.widgetCost });
   }
@@ -618,8 +620,9 @@ function renderTotals(){
   const selections = r.selections || {};
   setText('v-flat', money(r.monthlyFlat));
   setText('v-mgp', money(r.traffic.packageRub));
-  setText('v-over', money(r.traffic.extraWithMarkup));
-  setText('v-surcharge', money(0));
+  setText('v-over', money(r.traffic.extraRub));
+  const surchargeLabel = r.traffic.markup ? `${money(r.traffic.extraMarkup)} (${formatNumber(r.traffic.markup * 100, 0)}%)` : money(r.traffic.extraMarkup);
+  setText('v-surcharge', surchargeLabel);
   const widgetParts = [];
   if (r.widgets.payable){ widgetParts.push(`${r.widgets.payable} × ${money(r.widgets.widget_fee)}`); }
   if (r.widgets.sipPayable){ widgetParts.push(`SIP ${r.widgets.sipPayable} × ${money(r.widgets.sip_line_fee)}`); }
