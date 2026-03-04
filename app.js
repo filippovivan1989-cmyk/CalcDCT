@@ -89,31 +89,6 @@ function setAddonsOpen(open){
   }
 }
 
-function normalizeVatOption(raw = {}){
-  const maxNumbersRaw = raw.maxNumbers ?? raw.max_numbers;
-  const maxNumbers = (maxNumbersRaw == null || maxNumbersRaw === 'Infinity') ? Infinity : Number(maxNumbersRaw);
-  return {
-    value: raw.value ?? '',
-    label: raw.label ?? '— Не выбрано —',
-    monthly: Number(raw.monthly ?? 0),
-    sipIncluded: (raw.sipIncluded ?? raw.sip_included) == null ? null : Number(raw.sipIncluded ?? raw.sip_included),
-    sipFee: (raw.sipFee ?? raw.sip_fee ?? raw.sip_line_fee) == null ? null : Number(raw.sipFee ?? raw.sip_fee ?? raw.sip_line_fee),
-    maxNumbers: Number.isFinite(maxNumbers) ? maxNumbers : Infinity,
-    apiCost: Number(raw.apiCost ?? raw.api_cost ?? 0)
-  };
-}
-
-function vatOptions(){
-  const fromPrice = Array.isArray(PRICE?.vats_options) ? PRICE.vats_options : [];
-  if (!fromPrice.length) return DEFAULT_VAT_OPTIONS;
-  return fromPrice.map(normalizeVatOption);
-}
-
-function newClientNumberCost(){
-  const raw = PRICE?.new_client_number_cost;
-  return raw == null ? DEFAULT_NEW_CLIENT_NUMBER_COST : Number(raw || 0);
-}
-
 function vatOptionByValue(value){
   const options = vatOptions();
   return options.find(opt => opt.value === value) || options[0] || DEFAULT_VAT_OPTIONS[0];
