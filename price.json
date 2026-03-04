@@ -61,11 +61,11 @@
   "widgets_pricing": {
     "Лайм": {
       "widget_fee": 500,
-      "sip_line_fee": 150
+      "sip_line_fee": 200
     },
     "Манго": {
       "widget_fee": 500,
-      "sip_line_fee": 150
+      "sip_line_fee": 200
     },
     "Папайя": {
       "widget_fee": 350,
