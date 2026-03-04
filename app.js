@@ -4,27 +4,6 @@ import { loadAll, calcTotal } from './engine.js';
 const money = n => new Intl.NumberFormat('ru-RU', {maximumFractionDigits:0}).format(Math.round(n)) + " ₽";
 const OWN_NUMBERS_COEFFICIENT = 0.02;
 const OWN_NUMBERS_K_MAP = Object.freeze({5: 0.6, 15: 1.0, 30: 1.5, 60: 2.3, 120: 3.4});
-const DEFAULT_PRICE_VERSION = 'current';
-const PRICE_VERSION_STORAGE_KEY = 'calc-price-version';
-const NEW_PRICE_DATE = '08.12.2025';
-
-
-function loadSavedPriceVersion(){
-  try {
-    return localStorage.getItem(PRICE_VERSION_STORAGE_KEY) || DEFAULT_PRICE_VERSION;
-  } catch (err) {
-    return DEFAULT_PRICE_VERSION;
-  }
-}
-
-function persistPriceVersion(value){
-  try {
-    localStorage.setItem(PRICE_VERSION_STORAGE_KEY, value);
-  } catch (err) {
-    // ignore
-  }
-}
-
 function formatNumber(value, fractionDigits = 0) {
   const opts = { maximumFractionDigits: fractionDigits, minimumFractionDigits: fractionDigits };
   if (fractionDigits === 0) {
@@ -65,8 +44,7 @@ let state = {
   vatsApi: false,
   vatsNewClient: false,
   crmSaIntegration: false,
-  ownNumbersTracking: false,
-  priceVersion: loadSavedPriceVersion()
+  ownNumbersTracking: false
 };
 
 const detailOpenState = {};
@@ -113,13 +91,6 @@ function setAddonsOpen(open){
   if (toggle){
     toggle.setAttribute('aria-expanded', addonsExpanded ? 'true' : 'false');
   }
-}
-
-function applyPriceVersionToUI(){
-  const newLabel = document.querySelector('[data-price-label="new"]');
-  if (newLabel) newLabel.textContent = `Новые цены (с ${NEW_PRICE_DATE})`;
-  const radios = document.querySelectorAll('input[name="price-version"]');
-  radios.forEach(r => { r.checked = r.value === state.priceVersion; });
 }
 
 function vatOptionByValue(value){
@@ -408,7 +379,7 @@ function buildAddons(){
 }
 
 async function reloadPrice(){
-  const all = await loadAll(state.priceVersion);
+  const all = await loadAll();
   PRICE = all.PRICE;
   buildRetentions();
   buildWidgetsOptions();
@@ -416,28 +387,11 @@ async function reloadPrice(){
   setAddonsOpen(false);
   buildVatOptions();
   updateVatHints();
-  applyPriceVersionToUI();
   renderTotals();
   renderCompare();
 }
 
-async function setPriceVersion(version){
-  if (!version || state.priceVersion === version) return;
-  state.priceVersion = version;
-  persistPriceVersion(version);
-  await reloadPrice();
-}
-
 function bindBasics(){
-  const priceRadios = document.querySelectorAll('input[name="price-version"]');
-  priceRadios.forEach(radio => {
-    radio.checked = radio.value === state.priceVersion;
-    radio.addEventListener('change', ()=>{
-      if (!radio.checked) return;
-      setPriceVersion(radio.value).catch(err => console.error(err));
-    });
-  });
-
   document.querySelectorAll('.tariff-btn').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       document.querySelectorAll('.tariff-btn').forEach(b=>b.classList.remove('is-active'));
@@ -780,8 +734,6 @@ function renderCompare(){
 }
 
 async function main(){
-  applyPriceVersionToUI();
-  persistPriceVersion(state.priceVersion);
   await reloadPrice();
   bindBasics();
 }
