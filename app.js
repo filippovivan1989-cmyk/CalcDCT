@@ -21,14 +21,10 @@ function pluralizeNumbers(n){
   return 'номеров';
 }
 
-const VAT_OPTIONS = [
-  { value: '', label: '— Не выбрано —', monthly: 0, sipIncluded: null, sipFee: null, maxNumbers: Infinity, apiCost: 0 },
-  { value: 'basic-dct', label: 'Базовая для ДКТ', monthly: 1000, sipIncluded: 2, sipFee: 150, maxNumbers: 10, apiCost: 1000 },
-  { value: 'basic', label: 'Базовая', monthly: 1200, sipIncluded: 0, sipFee: 150, maxNumbers: 3, apiCost: 1000 },
-  { value: 'extended', label: 'Расширенная', monthly: 2500, sipIncluded: 0, sipFee: 150, maxNumbers: 15, apiCost: 3000 },
-  { value: 'max', label: 'Максимальная', monthly: 3600, sipIncluded: 0, sipFee: 0, maxNumbers: Infinity, apiCost: 5500 }
+const DEFAULT_VAT_OPTIONS = [
+  { value: '', label: '— Не выбрано —', monthly: 0, sipIncluded: null, sipFee: null, maxNumbers: Infinity, apiCost: 0 }
 ];
-const NEW_CLIENT_NUMBER_COST = 200;
+const DEFAULT_NEW_CLIENT_NUMBER_COST = 200;
 
 let PRICE=null;
 let state = {
@@ -94,7 +90,8 @@ function setAddonsOpen(open){
 }
 
 function vatOptionByValue(value){
-  return VAT_OPTIONS.find(opt => opt.value === value) || VAT_OPTIONS[0];
+  const options = vatOptions();
+  return options.find(opt => opt.value === value) || options[0] || DEFAULT_VAT_OPTIONS[0];
 }
 
 function currentVatOption(){
@@ -105,7 +102,7 @@ function buildVatOptions(){
   const sel = q('vats');
   if (!sel) return;
   sel.innerHTML = '';
-  VAT_OPTIONS.forEach(opt => {
+  vatOptions().forEach(opt => {
     const o = document.createElement('option');
     o.value = opt.value;
     o.textContent = opt.label;
@@ -199,7 +196,7 @@ function updateVatHints(){
       selectHint.textContent = 'Выберите версию ВАТС, чтобы учесть абонплату и ограничения по номерам.';
     } else {
       const limit = (vat.maxNumbers === Infinity) ? 'без ограничений' : `до ${vat.maxNumbers}`;
-      const bundle = money((vat.monthly || 0) + NEW_CLIENT_NUMBER_COST);
+      const bundle = money((vat.monthly || 0) + newClientNumberCost());
       const prefix = state.vatsNewClient
         ? `Добавлено ${bundle} (ВАТС + номер).`
         : `Для новых клиентов добавится ${bundle}.`;
@@ -518,7 +515,7 @@ function totalsForTariff(tariff, selectionsOverride){
   const vatCharges = {
     monthly: (state.vatsVersion && state.vatsNewClient) ? (vat.monthly || 0) : 0,
     api: (state.vatsVersion && state.vatsApi) ? (vat.apiCost || 0) : 0,
-    newNumber: (state.vatsVersion && state.vatsNewClient) ? NEW_CLIENT_NUMBER_COST : 0
+    newNumber: (state.vatsVersion && state.vatsNewClient) ? newClientNumberCost() : 0
   };
   const inputs = {
     tariff,
