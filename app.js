@@ -54,6 +54,11 @@ function setText(id, value){
   return el;
 }
 
+function setTextIfExists(id, value){
+  const el = q(id);
+  if (el) el.textContent = value;
+}
+
 function setupToggle(triggerId, boxId){
   const trigger = q(triggerId);
   const box = q(boxId);
@@ -510,7 +515,8 @@ function totalsForTariff(tariff, selectionsOverride){
   const widgetOverrides = {};
   if (state.vatsVersion){
     if (vat.sipIncluded != null) widgetOverrides.sipIncluded = vat.sipIncluded;
-    if (vat.sipFee != null) widgetOverrides.sipFee = vat.sipFee;
+    const resolvedSipFee = resolveVatSipFee(vat, tariff);
+    if (resolvedSipFee != null) widgetOverrides.sipFee = resolvedSipFee;
   }
   const vatCharges = {
     monthly: (state.vatsVersion && state.vatsNewClient) ? (vat.monthly || 0) : 0,
@@ -674,11 +680,11 @@ function renderCompare(){
     }
 
     const totals = totalsForTariff(t);
-    q('c-' + t).textContent = money(totals.total);
-    q('c-' + t + '-traffic').textContent = state.traffic.toLocaleString('ru-RU');
+    setTextIfExists('c-' + t, money(totals.total));
+    setTextIfExists('c-' + t + '-traffic', state.traffic.toLocaleString('ru-RU'));
     const wr = PRICE.widgets_rules[t];
     const widgetsLabel = (wr && wr.max==null) ? "без ограничений" : (state.widgets + " из " + (wr ? wr.max : 0));
-    q('c-' + t + '-widgets').textContent = widgetsLabel;
+    setTextIfExists('c-' + t + '-widgets', widgetsLabel);
 
     const note = el.querySelector('.t-note');
     if (note){
@@ -733,6 +739,11 @@ function renderCompare(){
 async function main(){
   await reloadPrice();
   bindBasics();
+  try {
+    await reloadPrice();
+  } catch (err){
+    console.error('Не удалось загрузить прайс:', err);
+  }
 }
 
 main();
