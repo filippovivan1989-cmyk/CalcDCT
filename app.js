@@ -4,27 +4,6 @@ import { loadAll, calcTotal } from './engine.js';
 const money = n => new Intl.NumberFormat('ru-RU', {maximumFractionDigits:0}).format(Math.round(n)) + " ₽";
 const OWN_NUMBERS_COEFFICIENT = 0.02;
 const OWN_NUMBERS_K_MAP = Object.freeze({5: 0.6, 15: 1.0, 30: 1.5, 60: 2.3, 120: 3.4});
-const DEFAULT_PRICE_VERSION = 'current';
-const PRICE_VERSION_STORAGE_KEY = 'calc-price-version';
-const NEW_PRICE_DATE = '08.12.2025';
-
-
-function loadSavedPriceVersion(){
-  try {
-    return localStorage.getItem(PRICE_VERSION_STORAGE_KEY) || DEFAULT_PRICE_VERSION;
-  } catch (err) {
-    return DEFAULT_PRICE_VERSION;
-  }
-}
-
-function persistPriceVersion(value){
-  try {
-    localStorage.setItem(PRICE_VERSION_STORAGE_KEY, value);
-  } catch (err) {
-    // ignore
-  }
-}
-
 function formatNumber(value, fractionDigits = 0) {
   const opts = { maximumFractionDigits: fractionDigits, minimumFractionDigits: fractionDigits };
   if (fractionDigits === 0) {
@@ -42,14 +21,10 @@ function pluralizeNumbers(n){
   return 'номеров';
 }
 
-const VAT_OPTIONS = [
-  { value: '', label: '— Не выбрано —', monthly: 0, sipIncluded: null, sipFee: null, maxNumbers: Infinity, apiCost: 0 },
-  { value: 'basic-dct', label: 'Базовая для ДКТ', monthly: 1000, sipIncluded: 2, sipFee: 150, maxNumbers: 10, apiCost: 1000 },
-  { value: 'basic', label: 'Базовая', monthly: 1200, sipIncluded: 0, sipFee: 150, maxNumbers: 3, apiCost: 1000 },
-  { value: 'extended', label: 'Расширенная', monthly: 2500, sipIncluded: 0, sipFee: 150, maxNumbers: 15, apiCost: 3000 },
-  { value: 'max', label: 'Максимальная', monthly: 3600, sipIncluded: 0, sipFee: 0, maxNumbers: Infinity, apiCost: 5500 }
+const DEFAULT_VAT_OPTIONS = [
+  { value: '', label: '— Не выбрано —', monthly: 0, sipIncluded: null, sipFee: null, maxNumbers: Infinity, apiCost: 0 }
 ];
-const NEW_CLIENT_NUMBER_COST = 200;
+const DEFAULT_NEW_CLIENT_NUMBER_COST = 200;
 
 let PRICE=null;
 let state = {
@@ -65,8 +40,7 @@ let state = {
   vatsApi: false,
   vatsNewClient: false,
   crmSaIntegration: false,
-  ownNumbersTracking: false,
-  priceVersion: loadSavedPriceVersion()
+  ownNumbersTracking: false
 };
 
 const detailOpenState = {};
@@ -78,6 +52,11 @@ function setText(id, value){
   const el = q(id);
   if (el) el.textContent = value;
   return el;
+}
+
+function setTextIfExists(id, value){
+  const el = q(id);
+  if (el) el.textContent = value;
 }
 
 function setupToggle(triggerId, boxId){
@@ -115,15 +94,60 @@ function setAddonsOpen(open){
   }
 }
 
-function applyPriceVersionToUI(){
-  const newLabel = document.querySelector('[data-price-label="new"]');
-  if (newLabel) newLabel.textContent = `Новые цены (с ${NEW_PRICE_DATE})`;
-  const radios = document.querySelectorAll('input[name="price-version"]');
-  radios.forEach(r => { r.checked = r.value === state.priceVersion; });
+function parseMoneyLike(value){
+  if (value == null) return null;
+  if (typeof value === 'number') return Number.isFinite(value) ? value : null;
+  if (typeof value === 'string'){
+    const normalized = value.replace(/\s+/g, '').replace('₽', '').replace(',', '.');
+    const parsed = Number(normalized);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+  return null;
+}
+
+function normalizeVatOption(raw = {}){
+  const maxNumbersRaw = raw.maxNumbers ?? raw.max_numbers;
+  const maxNumbers = (maxNumbersRaw == null || maxNumbersRaw === 'Infinity') ? Infinity : Number(maxNumbersRaw);
+  const rawSipFee = raw.sipFee ?? raw.sip_fee ?? raw.sip_line_fee;
+  const sipFeeByTariff = (rawSipFee && typeof rawSipFee === 'object' && !Array.isArray(rawSipFee))
+    ? Object.fromEntries(
+      Object.entries(rawSipFee).map(([tariffName, fee]) => [tariffName, parseMoneyLike(fee)])
+    )
+    : null;
+  return {
+    value: raw.value ?? '',
+    label: raw.label ?? '— Не выбрано —',
+    monthly: parseMoneyLike(raw.monthly) ?? 0,
+    sipIncluded: parseMoneyLike(raw.sipIncluded ?? raw.sip_included),
+    sipFee: sipFeeByTariff ? null : parseMoneyLike(rawSipFee),
+    sipFeeByTariff,
+    maxNumbers: Number.isFinite(maxNumbers) ? maxNumbers : Infinity,
+    apiCost: parseMoneyLike(raw.apiCost ?? raw.api_cost) ?? 0
+  };
+}
+
+function resolveVatSipFee(vat, tariff){
+  if (!vat) return null;
+  if (vat.sipFeeByTariff && Object.prototype.hasOwnProperty.call(vat.sipFeeByTariff, tariff)){
+    return vat.sipFeeByTariff[tariff];
+  }
+  return vat.sipFee;
+}
+
+function vatOptions(){
+  const fromPrice = Array.isArray(PRICE?.vats_options) ? PRICE.vats_options : [];
+  if (!fromPrice.length) return DEFAULT_VAT_OPTIONS;
+  return fromPrice.map(normalizeVatOption);
+}
+
+function newClientNumberCost(){
+  const raw = PRICE?.new_client_number_cost;
+  return raw == null ? DEFAULT_NEW_CLIENT_NUMBER_COST : Number(raw || 0);
 }
 
 function vatOptionByValue(value){
-  return VAT_OPTIONS.find(opt => opt.value === value) || VAT_OPTIONS[0];
+  const options = vatOptions();
+  return options.find(opt => opt.value === value) || options[0] || DEFAULT_VAT_OPTIONS[0];
 }
 
 function currentVatOption(){
@@ -134,7 +158,7 @@ function buildVatOptions(){
   const sel = q('vats');
   if (!sel) return;
   sel.innerHTML = '';
-  VAT_OPTIONS.forEach(opt => {
+  vatOptions().forEach(opt => {
     const o = document.createElement('option');
     o.value = opt.value;
     o.textContent = opt.label;
@@ -228,7 +252,7 @@ function updateVatHints(){
       selectHint.textContent = 'Выберите версию ВАТС, чтобы учесть абонплату и ограничения по номерам.';
     } else {
       const limit = (vat.maxNumbers === Infinity) ? 'без ограничений' : `до ${vat.maxNumbers}`;
-      const bundle = money((vat.monthly || 0) + NEW_CLIENT_NUMBER_COST);
+      const bundle = money((vat.monthly || 0) + newClientNumberCost());
       const prefix = state.vatsNewClient
         ? `Добавлено ${bundle} (ВАТС + номер).`
         : `Для новых клиентов добавится ${bundle}.`;
@@ -408,7 +432,7 @@ function buildAddons(){
 }
 
 async function reloadPrice(){
-  const all = await loadAll(state.priceVersion);
+  const all = await loadAll();
   PRICE = all.PRICE;
   buildRetentions();
   buildWidgetsOptions();
@@ -416,28 +440,11 @@ async function reloadPrice(){
   setAddonsOpen(false);
   buildVatOptions();
   updateVatHints();
-  applyPriceVersionToUI();
   renderTotals();
   renderCompare();
 }
 
-async function setPriceVersion(version){
-  if (!version || state.priceVersion === version) return;
-  state.priceVersion = version;
-  persistPriceVersion(version);
-  await reloadPrice();
-}
-
 function bindBasics(){
-  const priceRadios = document.querySelectorAll('input[name="price-version"]');
-  priceRadios.forEach(radio => {
-    radio.checked = radio.value === state.priceVersion;
-    radio.addEventListener('change', ()=>{
-      if (!radio.checked) return;
-      setPriceVersion(radio.value).catch(err => console.error(err));
-    });
-  });
-
   document.querySelectorAll('.tariff-btn').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       document.querySelectorAll('.tariff-btn').forEach(b=>b.classList.remove('is-active'));
@@ -559,12 +566,13 @@ function totalsForTariff(tariff, selectionsOverride){
   const widgetOverrides = {};
   if (state.vatsVersion){
     if (vat.sipIncluded != null) widgetOverrides.sipIncluded = vat.sipIncluded;
-    if (vat.sipFee != null) widgetOverrides.sipFee = vat.sipFee;
+    const resolvedSipFee = resolveVatSipFee(vat, tariff);
+    if (resolvedSipFee != null) widgetOverrides.sipFee = resolvedSipFee;
   }
   const vatCharges = {
     monthly: (state.vatsVersion && state.vatsNewClient) ? (vat.monthly || 0) : 0,
     api: (state.vatsVersion && state.vatsApi) ? (vat.apiCost || 0) : 0,
-    newNumber: (state.vatsVersion && state.vatsNewClient) ? NEW_CLIENT_NUMBER_COST : 0
+    newNumber: (state.vatsVersion && state.vatsNewClient) ? newClientNumberCost() : 0
   };
   const inputs = {
     tariff,
@@ -723,11 +731,11 @@ function renderCompare(){
     }
 
     const totals = totalsForTariff(t);
-    q('c-' + t).textContent = money(totals.total);
-    q('c-' + t + '-traffic').textContent = state.traffic.toLocaleString('ru-RU');
+    setTextIfExists('c-' + t, money(totals.total));
+    setTextIfExists('c-' + t + '-traffic', state.traffic.toLocaleString('ru-RU'));
     const wr = PRICE.widgets_rules[t];
     const widgetsLabel = (wr && wr.max==null) ? "без ограничений" : (state.widgets + " из " + (wr ? wr.max : 0));
-    q('c-' + t + '-widgets').textContent = widgetsLabel;
+    setTextIfExists('c-' + t + '-widgets', widgetsLabel);
 
     const note = el.querySelector('.t-note');
     if (note){
@@ -780,10 +788,12 @@ function renderCompare(){
 }
 
 async function main(){
-  applyPriceVersionToUI();
-  persistPriceVersion(state.priceVersion);
-  await reloadPrice();
   bindBasics();
+  try {
+    await reloadPrice();
+  } catch (err){
+    console.error('Не удалось загрузить прайс:', err);
+  }
 }
 
 main();
