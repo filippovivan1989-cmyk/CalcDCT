@@ -73,6 +73,54 @@
       "sip_line_fee": 0
     }
   },
+  "vats_options": [
+    {
+      "value": "",
+      "label": "— Не выбрано —",
+      "monthly": 0,
+      "sip_included": null,
+      "sip_line_fee": null,
+      "max_numbers": null,
+      "api_cost": 0
+    },
+    {
+      "value": "basic-dct",
+      "label": "Базовая для ДКТ",
+      "monthly": 1000,
+      "sip_included": 2,
+      "sip_line_fee": 150,
+      "max_numbers": 10,
+      "api_cost": 1000
+    },
+    {
+      "value": "basic",
+      "label": "Базовая",
+      "monthly": 1200,
+      "sip_included": 0,
+      "sip_line_fee": 150,
+      "max_numbers": 3,
+      "api_cost": 1000
+    },
+    {
+      "value": "extended",
+      "label": "Расширенная",
+      "monthly": 2500,
+      "sip_included": 0,
+      "sip_line_fee": 150,
+      "max_numbers": 15,
+      "api_cost": 3000
+    },
+    {
+      "value": "max",
+      "label": "Максимальная",
+      "monthly": 3600,
+      "sip_included": 0,
+      "sip_line_fee": 0,
+      "max_numbers": null,
+      "api_cost": 5500
+    }
+  ],
+  "new_client_number_cost": 200,
   "email_tracking": {
     "included_by_tariff": {
       "Лайм": 1000,

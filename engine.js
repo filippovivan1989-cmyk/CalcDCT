@@ -1,7 +1,11 @@
 
-export async function loadAll(priceVersion = 'current') {
-  const fileName = priceVersion === 'new' ? './price_new.json' : './price.json';
-  const price = await fetch(fileName, {cache:'no-store'}).then(r=>r.json());
+export async function loadAll() {
+  const priceUrl = new URL('./price_new.json', import.meta.url);
+  const response = await fetch(priceUrl, {cache:'no-store'});
+  if (!response.ok) {
+    throw new Error(`Не удалось загрузить прайс (${response.status}) по адресу ${priceUrl}`);
+  }
+  const price = await response.json();
   return { PRICE: price };
 }
 function tInfo(PRICE, name){ return PRICE.tariffs.find(t=>t.name===name); }
