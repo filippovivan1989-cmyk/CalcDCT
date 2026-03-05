@@ -88,7 +88,7 @@
       "label": "Базовая для ДКТ",
       "monthly": 1000,
       "sip_included": 2,
-      "sip_line_fee": 150,
+      "sip_line_fee": 200,
       "max_numbers": 10,
       "api_cost": 1000
     },
@@ -97,7 +97,7 @@
       "label": "Базовая",
       "monthly": 1200,
       "sip_included": 0,
-      "sip_line_fee": 150,
+      "sip_line_fee": 200,
       "max_numbers": 3,
       "api_cost": 1000
     },
@@ -106,7 +106,7 @@
       "label": "Расширенная",
       "monthly": 2500,
       "sip_included": 0,
-      "sip_line_fee": 150,
+      "sip_line_fee": 200,
       "max_numbers": 15,
       "api_cost": 3000
     },
@@ -120,7 +120,7 @@
       "api_cost": 5500
     }
   ],
-  "new_client_number_cost": 200,
+  "new_client_number_cost": 250,
   "email_tracking": {
     "included_by_tariff": {
       "Лайм": 1000,

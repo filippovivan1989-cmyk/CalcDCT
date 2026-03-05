@@ -94,57 +94,6 @@ function setAddonsOpen(open){
   }
 }
 
-function parseMoneyLike(value){
-  if (value == null) return null;
-  if (typeof value === 'number') return Number.isFinite(value) ? value : null;
-  if (typeof value === 'string'){
-    const normalized = value.replace(/\s+/g, '').replace('₽', '').replace(',', '.');
-    const parsed = Number(normalized);
-    return Number.isFinite(parsed) ? parsed : null;
-  }
-  return null;
-}
-
-function normalizeVatOption(raw = {}){
-  const maxNumbersRaw = raw.maxNumbers ?? raw.max_numbers;
-  const maxNumbers = (maxNumbersRaw == null || maxNumbersRaw === 'Infinity') ? Infinity : Number(maxNumbersRaw);
-  const rawSipFee = raw.sipFee ?? raw.sip_fee ?? raw.sip_line_fee;
-  const sipFeeByTariff = (rawSipFee && typeof rawSipFee === 'object' && !Array.isArray(rawSipFee))
-    ? Object.fromEntries(
-      Object.entries(rawSipFee).map(([tariffName, fee]) => [tariffName, parseMoneyLike(fee)])
-    )
-    : null;
-  return {
-    value: raw.value ?? '',
-    label: raw.label ?? '— Не выбрано —',
-    monthly: parseMoneyLike(raw.monthly) ?? 0,
-    sipIncluded: parseMoneyLike(raw.sipIncluded ?? raw.sip_included),
-    sipFee: sipFeeByTariff ? null : parseMoneyLike(rawSipFee),
-    sipFeeByTariff,
-    maxNumbers: Number.isFinite(maxNumbers) ? maxNumbers : Infinity,
-    apiCost: parseMoneyLike(raw.apiCost ?? raw.api_cost) ?? 0
-  };
-}
-
-function resolveVatSipFee(vat, tariff){
-  if (!vat) return null;
-  if (vat.sipFeeByTariff && Object.prototype.hasOwnProperty.call(vat.sipFeeByTariff, tariff)){
-    return vat.sipFeeByTariff[tariff];
-  }
-  return vat.sipFee;
-}
-
-function vatOptions(){
-  const fromPrice = Array.isArray(PRICE?.vats_options) ? PRICE.vats_options : [];
-  if (!fromPrice.length) return DEFAULT_VAT_OPTIONS;
-  return fromPrice.map(normalizeVatOption);
-}
-
-function newClientNumberCost(){
-  const raw = PRICE?.new_client_number_cost;
-  return raw == null ? DEFAULT_NEW_CLIENT_NUMBER_COST : Number(raw || 0);
-}
-
 function vatOptionByValue(value){
   const options = vatOptions();
   return options.find(opt => opt.value === value) || options[0] || DEFAULT_VAT_OPTIONS[0];
@@ -788,6 +737,7 @@ function renderCompare(){
 }
 
 async function main(){
+  await reloadPrice();
   bindBasics();
   try {
     await reloadPrice();
