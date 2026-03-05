@@ -1,6 +1,11 @@
 
 export async function loadAll() {
-  const price = await fetch('./price_new.json', {cache:'no-store'}).then(r=>r.json());
+  const priceUrl = new URL('./price_new.json', import.meta.url);
+  const response = await fetch(priceUrl, {cache:'no-store'});
+  if (!response.ok) {
+    throw new Error(`Не удалось загрузить прайс (${response.status}) по адресу ${priceUrl}`);
+  }
+  const price = await response.json();
   return { PRICE: price };
 }
 function tInfo(PRICE, name){ return PRICE.tariffs.find(t=>t.name===name); }

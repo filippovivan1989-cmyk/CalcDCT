@@ -20,7 +20,6 @@
   "retentions": [
     {
       "label": "5 минут",
-
       "coef": 0.17
     },
     {
@@ -120,7 +119,7 @@
       "api_cost": 5500
     }
   ],
-  "new_client_number_cost": 250,
+  "new_client_number_cost": 200,
   "email_tracking": {
     "included_by_tariff": {
       "Лайм": 1000,
